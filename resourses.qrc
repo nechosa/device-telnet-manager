@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/img" >
+        <file>img/workstation_256.png</file>
+        <file>img/connect_256.png</file>
+        <file>img/connect_config_256.png</file>
+        <file>img/connect_info_256.png</file>
+        <file>img/disconnect_256.png</file>
+        <file>img/folder_256.png</file>
+        <file>img/folder_add_256.png</file>
+        <file>img/folder_save_256.png</file>
+        <file>img/router-hi.png</file>
+        <file>img/router-md.png</file>
+        <file>img/router-th.png</file>
+        <file>img/server_256.png</file>
+        <file>img/dedicated_server_48.bmp</file>
+        <file>img/dedicated_server_128.bmp</file>
+        <file>img/workstation_128.png</file>
+        <file>img/workstation_72.png</file>
+        <file>img/workstation_256.ico</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainForm</class>
+ <widget class="QMainWindow" name="MainForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1111</width>
+    <height>579</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainForm</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="gbShema">
+      <property name="title">
+       <string>Структура информационной сети</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1111</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+    <addaction name="action_3"/>
+    <addaction name="action_4"/>
+    <addaction name="separator"/>
+    <addaction name="action_5"/>
+    <addaction name="separator"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Мнемосхема</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Вид</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>Управление</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_5">
+    <property name="title">
+     <string>Устройство</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_6">
+    <property name="title">
+     <string>Spravka</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
+   <addaction name="menu_5"/>
+   <addaction name="menu_6"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="iconSize">
+    <size>
+     <width>48</width>
+     <height>48</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionNew"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>48</width>
+     <height>48</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_add_comp"/>
+   <addaction name="action_add_router"/>
+   <addaction name="action_add_linc"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>48</width>
+     <height>48</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionShowInfo"/>
+   <addaction name="actionConfig"/>
+  </widget>
+  <action name="action">
+   <property name="text">
+    <string>Новая мнемосхема</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Открыть мнемосхему</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Сохранить мнемосхему</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Сохранить мнемосхему как ...</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Сохранить изображение</string>
+   </property>
+  </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="action_add_comp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/workstation_256.png</normaloff>:/img/img/workstation_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>computer</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить компьютер</string>
+   </property>
+  </action>
+  <action name="action_add_router">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/router-hi.png</normaloff>:/img/img/router-hi.png</iconset>
+   </property>
+   <property name="text">
+    <string>router</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить маршрутизатор</string>
+   </property>
+  </action>
+  <action name="action_add_linc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/connect_256.png</normaloff>
+     <normalon>:/img/img/disconnect_256.png</normalon>:/img/img/connect_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>ethernet</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить узел</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/folder_256.png</normaloff>:/img/img/folder_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>open</string>
+   </property>
+   <property name="toolTip">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/folder_add_256.png</normaloff>:/img/img/folder_add_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>new</string>
+   </property>
+   <property name="toolTip">
+    <string>Новая мнемосхема</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/folder_save_256.png</normaloff>:/img/img/folder_save_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>save</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="actionShowInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/connect_info_256.png</normaloff>:/img/img/connect_info_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>showInfo</string>
+   </property>
+   <property name="toolTip">
+    <string>Показать информацию</string>
+   </property>
+  </action>
+  <action name="actionConfig">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/connect_config_256.png</normaloff>:/img/img/connect_config_256.png</iconset>
+   </property>
+   <property name="text">
+    <string>config</string>
+   </property>
+   <property name="toolTip">
+    <string>Настройка</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

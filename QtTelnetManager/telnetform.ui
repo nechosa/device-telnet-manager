@@ -45,7 +45,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QWidget" name="widget" native="true"/>
+      <widget class="QWidget" name="led" native="true"/>
      </item>
     </layout>
    </item>
@@ -61,7 +61,11 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="login_edit"/>
+        <widget class="QLineEdit" name="login_edit">
+         <property name="text">
+          <string>root</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="lb_password">
@@ -71,7 +75,11 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="password_edit"/>
+        <widget class="QLineEdit" name="password_edit">
+         <property name="text">
+          <string>root0000</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -91,11 +99,9 @@
     </layout>
    </item>
    <item row="2" column="0">
-    <widget class="QWidget" name="widget_2" native="true"/>
+    <widget class="QWidget" name="console" native="true"/>
    </item>
   </layout>
-  <zorder>widget_2</zorder>
-  <zorder>widget</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
