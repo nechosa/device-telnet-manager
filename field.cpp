@@ -5,10 +5,16 @@
 #include <QAction>
 #include "presentertelnet.h"
 #include "telnetform.h"
+#include "device.h"
 
-#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
+//#include "link.h"
 
-Field::Field(QWidget * parent):QGLWidget(parent),
+#define IS(x1,x0,delta) ((x1>x0)&&(x1<x0+delta))?1:0
+//#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
+
+
+
+Field::Field(QWidget * parent):QGLWidget(QGLFormat(QGL::SampleBuffers),parent),
 R1(0.831),G1(0.815),B1(0.784),
 R2(0.87),G2(0.855),B2(0.824),
 //  flagAnimation (false),
@@ -28,17 +34,38 @@ shiftMode(false),
 selectMode(false),
 additionSelectionMode(false)
 {
-    //this->items.clear();
-    //this->links.clear();
+    //Link *lnk;
+    this->items.clear();
+    this->links.clear();
 
     this->setAutoBufferSwap(true);
     //ani.start();
     this->installEventFilter(this);
+     QObject::connect(this,SIGNAL(newLinkAdded(int,int)),this,SLOT(SlotAddChannel(int,int)));
 }
 
 Field::~Field()
 {
 
+}
+
+void Field::setcheckDevice(DeviceType create_new_dev)
+{
+    create_dev = create_new_dev;
+    /*
+    switch(create_dev)
+    {
+        case COMPUTER:
+        qDebug()<<"COMPUTER";
+        break;
+        case ROUTER:
+        qDebug()<<"ROUTER";
+        break;
+        default:
+        qDebug()<<"DEFAULT";
+        break;
+    }
+    */
 }
 
 
@@ -86,6 +113,9 @@ void Field::initializeGL()
     //glDisable(GL_ALPHA_TEST);
     //glDisable(GL_LOGIC_OP);
     glClearColor(1,1,1,1);
+    //qglClearColor(Qt::white);
+    // glClearColor(Qt::white);
+    //glw.qglClearColor(Qt::white);
     //glClear(GL_COLOR_BUFFER_BIT);
     glShadeModel(GL_SMOOTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -102,6 +132,7 @@ void Field::resizeGL(int w, int h)
 void Field::paintGL()
 {
     qDebug()<<"paintGL";
+    qDebug()<<GL_VERSION;
     if (!this->isVisible())
         return;
     this->makeCurrent();
@@ -185,43 +216,95 @@ void Field::paintGL()
     glTranslatef(0,0,1);
     if (tmpBeg>-1)
     {
+
         /*
-        net_node * begining = this->items[this->tmpBeg];
-        GLfloat x1 = begining->x()+begining->width();
-        GLfloat y1 = begining->y()+begining->height()/2;
-        glEnable(GL_LINE_STIPPLE);
+        QPainter painter;
+         painter.setRenderHint(QPainter::Antialiasing);
+          painter.setRenderHint(QPainter::HighQualityAntialiasing);
+
+        painter.begin(this);
+        */
+
+
+
+        Device * begining = this->items[this->tmpBeg];
+        GLfloat x1 = begining->x()+begining->width()-50;
+        GLfloat y1 = begining->y()+begining->height()/2-20;
+
+        glEnable(GL_MULTISAMPLE);
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+
+
         glEnable(GL_COLOR_LOGIC_OP);
         glLogicOp(GL_XOR);
         glColor3f(1,1,1);
-        glLineStipple(5, 0xFCFC);
-        glLineWidth(5);
-        glBegin(GL_LINES);
-            glVertex2f(x1,y1);
-            glVertex2f(tmpX, tmpY);
+        glLineWidth(4.5);
+
+        glBegin(GL_LINE);
+        glVertex2f(x1,y1);
+        glVertex2f(tmpX, tmpY);
         glEnd();
+
+        glDisable(GL_COLOR_LOGIC_OP);
+        //painter.end();
+
+        /*
+
+        glEnable(GL_LINE_SMOOTH);
+        //glEnable(GL_LINE_STIPPLE);
+        glEnable(GL_POINT_SMOOTH_HINT);
+        glEnable(GL_COLOR_LOGIC_OP);
+
+        glLogicOp(GL_XOR);
+        glColor3f(1,1,1);
+        //glLineStipple(5, 0xFCFC);
+        // glLineStipple(2, 0xAAAA);
+        // glLineStipple(2, 0x00FF);
+        glLineWidth(4);
+
+        glShadeModel(GL_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+
+        glBegin(GL_LINE);
+        glVertex2f(x1,y1);
+        glVertex2f(tmpX, tmpY);
+        glEnd();
+
         glDisable(GL_LINE_STIPPLE);
         glLineWidth(1);
+        */
+        /*
         glBegin(GL_LINES);
             glVertex2f(tmpX-50,tmpY);
             glVertex2f(tmpX+50,tmpY);
             glVertex2f(tmpX,tmpY-50);
             glVertex2f(tmpX,tmpY+50);
         glEnd();
-        glLineWidth(2);
+        */
+        //glLineWidth(2);
+        /*
         glBegin(GL_LINE_LOOP);
             glVertex2f(tmpX-20,tmpY-20);
             glVertex2f(tmpX+20,tmpY-20);
             glVertex2f(tmpX+20,tmpY+20);
             glVertex2f(tmpX-20,tmpY+20);
         glEnd();
+
         glDisable(GL_COLOR_LOGIC_OP);
-        glDisable(GL_LINE_STIPPLE);
+        //glDisable(GL_LINE_STIPPLE);
+        glDisable(GL_POINT_SMOOTH_HINT);
         */
+
+
     }
-    /*
+
+
     for (int i=0;i<this->links.count();i++)
     {
-        net_channel *theLink = this->links[i];
+        Link *theLink = this->links[i];
         if (this->selectMode)
         {
             bool isSelected = selArea.contains(theLink->getCentralArea());
@@ -229,9 +312,9 @@ void Field::paintGL()
                 isSelected = isSelected || theLink->isSelected();
             theLink->setIsSelected(isSelected);
         }
-        theLink->paint(cntt);
+        theLink->paint(1);
     }
-    */
+
     glTranslatef(0,0,1);
 
     for (int i=0;i<items.count();i++)
@@ -380,15 +463,47 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
     QMouseEvent * me = dynamic_cast<QMouseEvent *>(evnt);
     if (me)
     {
-
-
         this->tmpX = me->pos().x()-this->shiftTranslateX;
         this->tmpY = me->pos().y()-this->shiftTranslateY;
-         qDebug()<<"tmpX"<<this->tmpX<<"tmpY"<<this->tmpY;
-                 //qDebug()<<"dev y = "<<dev->y();
+
+        //qDebug()<<"dev y = "<<dev->y();
 
     }
-/*
+
+    /*
+    if ((evnt->type() == QEvent::MouseMove)&&(QApplication::mouseButtons()==Qt::LeftButton))
+    {
+
+        qDebug()<<"MouseMove ";
+        qDebug()<<"tmpX"<<this->tmpX<<"tmpY"<<this->tmpY;
+
+        QListIterator<Device *> it(items);
+        while(it.hasNext())
+        {
+
+            int i = 1;
+            //QString text = "ı”‘“œ ”‘◊œ"+ QString::number(i);
+            Device * dev = it.next();
+            //#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
+            if (IS(this->tmpX,dev->x(),10)&&IS(this->tmpY,dev->y(),10))
+            {
+                qDebug()<<"MouseButtonPress++Left";
+                this->shiftX = this->tmpX;
+                this->shiftY = this->tmpY;
+
+            }
+            i++;
+
+        }
+        this->updateGL();
+    }
+    */
+
+
+
+
+
+    /*
     switch (evnt->type())
     {
             case QEvent::MouseButtonPress:
@@ -418,10 +533,228 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
 
     if (evnt->type() == QEvent::MouseButtonPress)
     {
+        if (me->button() == Qt::MidButton)
+        {
+            this->shiftMode = true;
+            this->shiftX = this->tmpX;
+            this->shiftY = this->tmpY;
+        }
+        else
+        {
+            this->additionSelectionMode = (me->button() == Qt::RightButton);
+            this->movingBlock = 0;
+            this->tmpBeg = -1;
+            this->selectMode = false;
+            for (int i=links.size()-1;(i>=0);i--)
+            {
+                Link * lnk = this->links.at(i);
+                QPoint shiftedPoint(tmpX, tmpY);
+                if (lnk->getCentralArea().contains(shiftedPoint))
+                {
+                    this->movingBlock = lnk->begining;
+                    for (int j=0;j<this->items.size();j++)
+                    {
+                        if (items.at(j) == this->movingBlock)
+                        {
+                            this->tmpBeg = j;
+                            break;
+                        }
+                    }
+                    this->delLink(i);
+                    emit SignalDelChan(i);
+                    break;
+                }
+            }
+            for (int i=items.count()-1;i>=0;i--)
+            {
+                Device * theBlock = items[i];
+                if ((tmpX>theBlock->x()) && (tmpX < theBlock->x()+theBlock->width())
+                    && (tmpY>theBlock->y()) && (tmpY < theBlock->y()+theBlock->height()))
+                    {
+                    this->blockX = tmpX - theBlock->x();
+                    this->blockY = tmpY  - theBlock->y();
+                    this->movingBlock = theBlock;
+                    if (additionSelectionMode)
+                        this->tmpBeg = i;
+                    break;
+                }
+            }
+            if ((!movingBlock) && (tmpBeg==-1))
+            {
+                this->selectMode = true;
+                this->selectedArea.setTopLeft(me->pos());
+                this->selectedArea.setBottomRight(me->pos());
+            }
+            this->updateGL();
+        }
+
+
+        if (me->button()==Qt::LeftButton)
+        {
+            qDebug()<<"MouseButtonPress+RightButton";
+            qDebug()<<create_dev;
+            Device *dev;
+            switch(create_dev)
+            {
+
+            case COMPUTER:
+                qDebug()<<"COMPUTER";              
+                dev = new Device(this,this->tmpX,this->tmpY,":/img/img/workstation_128.png","ÎœÕ–ÿ¿‘≈“");
+                this->appendItem(dev);
+
+                emit setDefault();
+                break;
+            case ROUTER:
+                qDebug()<<"ROUTER1"<<shiftMode;
+                dev = new Device(this,this->tmpX,this->tmpY,":/img/img/router-th.png","Ì¡“€“’‘…⁄¡‘œ“");
+                this->appendItem(dev);
+                emit setDefault();
+                break;
+            case LINK:
+                qDebug()<<"LINK";
+
+                this->additionSelectionMode = (me->button() == Qt::LeftButton);
+                this->movingBlock = 0;
+                this->tmpBeg = -1;
+                this->selectMode = false;
+
+                for (int i=links.size()-1;(i>=0);i--)
+                {
+                    Link * lnk = this->links.at(i);
+                    QPoint shiftedPoint(tmpX, tmpY);
+                    if (lnk->getCentralArea().contains(shiftedPoint))
+                    {
+                        this->movingBlock = lnk->begining;
+                        for (int j=0;j<this->items.size();j++)
+                        {
+                            if (items.at(j) == this->movingBlock)
+                            {
+                                this->tmpBeg = j;
+                                break;
+                            }
+                        }
+                        this->delLink(i);
+                        emit SignalDelChan(i);
+                        break;
+                    }
+
+                }
+
+                for (int i=items.count()-1;i>=0;i--)
+                {
+                    Device * theBlock = items[i];
+                    if ((tmpX>theBlock->x()) && (tmpX < theBlock->x()+theBlock->width())
+                        && (tmpY>theBlock->y()) && (tmpY < theBlock->y()+theBlock->height()))
+                        {
+                        this->blockX = tmpX - theBlock->x();
+                        this->blockY = tmpY  - theBlock->y();
+                        this->movingBlock = theBlock;
+                        if (additionSelectionMode)
+                            this->tmpBeg = i;
+                        break;
+                    }
+                }
+
+                if ((!movingBlock) && (tmpBeg==-1))
+                {
+                    this->selectMode = true;
+                    this->selectedArea.setTopLeft(me->pos());
+                    this->selectedArea.setBottomRight(me->pos());
+                }
+                break;
+
+            case DEFAULT:
+            default:
+
+
+
+                /*
+                qDebug()<<"tmpX = "<<this->tmpX ;
+                qDebug()<<"tmpY = "<< this->tmpY ;
+                QListIterator<Device *> it(items);
+                while(it.hasNext())
+                {
+
+                    int i = 1;
+                    //QString text = "ı”‘“œ ”‘◊œ"+ QString::number(i);
+                    Device * dev = it.next();
+                    //#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
+                    if (IS(this->tmpX,dev->x(),10)&&IS(this->tmpY,dev->y(),10))
+                    {
+                        qDebug()<<"MouseButtonPress RightButton++";
+
+                        qDebug()<<"MouseButtonPress RightButton";
+                        qDebug()<<"contextMenuEvent";
+
+                        QMenu menu(this);
+                        QAction *action1 = new QAction(QString::fromLocal8Bit(dev->getName().toLatin1()), this);
+                        menu.addAction(action1);
+                        QObject::connect(action1,SIGNAL(triggered()),this,SLOT(createTerminal()));
+                        menu.addSeparator();
+                        QAction *action2 = new QAction(QString::fromLocal8Bit("’ŒÀ‘ 2"), this);
+                        action2->setIcon(QIcon(":/img/img/workstation_256.png"));
+                        menu.addAction(action2);
+                        // menu.addAction();
+                        menu.exec(me->globalPos());
+                    }
+                    i++;
+
+                }
+            }
+            this->updateGL();
+            */
+
+                /*
+                this->shiftMode = true;
+                this->shiftX = this->tmpX;
+                this->shiftY = this->tmpY;
+                qDebug()<<"DEFAULT";
+                */
+                //this->selectedArea.setBottomRight(QPoint(me->pos()));
+                break;
+            }
+            qDebug()<<"LeftButton()!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+            /*
+        if (ui->action_add_comp->isChecked())
+        {
+            qDebug()<< "create COMP()";
+            //dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/workstation_256.png");
+            dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/workstation_128.png","ÎœÕ–ÿ¿‘≈“");
+            //dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/workstation_128.ico");
+            //dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/dedicated_server_128.bmp");
+
+            work_field->appendItem(dev);
+            //dev = new Device(work_field,me->pos().x(),me->pos().y());
+            //   dev = new Device(work_field,work_field->tmpX,work_field->tmpY);
+        }
+        if (ui->action_add_router->isChecked())
+        {
+            qDebug()<< "create ROUTER()";
+            dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/router-th.png","Ì¡“€“’‘…⁄¡‘œ“");
+            work_field->appendItem(dev);
+            //dev = new Device();
+            //dev = new Device(work_field,work_field->tmpX,work_field->tmpY);
+        }
+        if (ui->action_add_linc->isChecked())
+        {
+            qDebug()<< "create LINK()";
+            //lnk = new Link(work_field,me->pos().x(),me->pos().y(),":/img/img/router-th.png","Ì¡“€“’‘…⁄¡‘œ“");
+           // work_field->appendLink();
+            /*
+              dev = new Device(work_field,me->pos().x(),me->pos().y(),"");
+              work_field->appendItem(dev);
+
+            //  dev = new Device();
+            // dev = new Device(work_field,work_field->tmpX,work_field->tmpY);
+        }
+        // dev = new Device(work_field,me->pos().x(),me->pos().y());
+        //work_field->add
+
+        }
         //event->button()==Qt::RightButton
 
         // qDebug()<<"MouseButtonPress";
-        /*
+
         if (me->button() == Qt::MidButton)
         {
             this->shiftMode = true;
@@ -437,7 +770,7 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
 
             for (int i=links.size()-1;(i>=0);i--)
             {
-                net_channel * lnk = this->links.at(i);
+                Link * lnk = this->links.at(i);
                 QPoint shiftedPoint(tmpX, tmpY);
                 if (lnk->getCentralArea().contains(shiftedPoint))
                 {
@@ -459,10 +792,10 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
 
             for (int i=items.count()-1;i>=0;i--)
             {
-                net_node * theBlock = items[i];
+                Device * theBlock = items[i];
                 if ((tmpX>theBlock->x()) && (tmpX < theBlock->x()+theBlock->width())
                     && (tmpY>theBlock->y()) && (tmpY < theBlock->y()+theBlock->height()))
-                {
+                    {
                     this->blockX = tmpX - theBlock->x();
                     this->blockY = tmpY  - theBlock->y();
                     this->movingBlock = theBlock;
@@ -477,128 +810,117 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
                 this->selectMode = true;
                 this->selectedArea.setTopLeft(me->pos());
                 this->selectedArea.setBottomRight(me->pos());
-            }
+            }*/
+            this->updateGL();
         }
-        this->updateGL();
-        */
+
+
     }
-    if (evnt->type() == QEvent::MouseButtonRelease)
-    {
-        qDebug()<<"MouseButtonRelease";
-        if (me->button()==Qt::RightButton)
+        if (evnt->type() == QEvent::MouseButtonRelease)
         {
-
-
-            /*for (it;it !=items.constEnd();++it)
-        {
-              qDebug()<<"iterator x = "<<it.next()->x();
-        }
-        */
-            qDebug()<<"tmpX = "<<this->tmpX ;
-            qDebug()<<"tmpY = "<< this->tmpY ;
-            QListIterator<Device *> it(items);
-            while(it.hasNext())
+            qDebug()<<"MouseButtonRelease";
+            if (me->button()==Qt::RightButton)
             {
-
-                int i = 1;
-                //QString text = "ı”‘“œ ”‘◊œ"+ QString::number(i);
-                Device * dev = it.next();
-                //#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
-                if (IS(this->tmpX,dev->x(),10)&&IS(this->tmpY,dev->y(),10))
+                qDebug()<<"tmpX = "<<this->tmpX ;
+                qDebug()<<"tmpY = "<< this->tmpY ;
+                QListIterator<Device *> it(items);
+                while(it.hasNext())
                 {
-                    qDebug()<<"MouseButtonPress RightButton++";
 
-                    qDebug()<<"MouseButtonPress RightButton";
-                    qDebug()<<"contextMenuEvent";
+                    int i = 1;
+                    //QString text = "ı”‘“œ ”‘◊œ"+ QString::number(i);
+                    Device * dev = it.next();
+                    //#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
+                    if (IS(this->tmpX,dev->x(),dev->width())&&IS(this->tmpY,dev->y(),dev->height()))
+                    {
+                        qDebug()<<"this->tmpX"<<this->tmpX<<"this->tmpY"<<this->tmpY;
+                        qDebug()<<"dev->width()"<<dev->width()<<"dev->height()"<<dev->height();
+                        qDebug()<<"MouseButtonPress RightButton++";
 
-                    QMenu menu(this);
-                    QAction *action1 = new QAction(QString::fromLocal8Bit(dev->getName().toLatin1()), this);
-                    menu.addAction(action1);
-                    QObject::connect(action1,SIGNAL(triggered()),this,SLOT(createTerminal()));
-                    menu.addSeparator();
-                    QAction *action2 = new QAction(QString::fromLocal8Bit("’ŒÀ‘ 2"), this);
-                    action2->setIcon(QIcon(":/img/img/workstation_256.png"));
-                    menu.addAction(action2);
-                    // menu.addAction();
-                    menu.exec(me->globalPos());
+                        qDebug()<<"MouseButtonPress RightButton";
+                        qDebug()<<"contextMenuEvent";
 
+                        QMenu menu(this);
+                        QAction *action1 = new QAction(QString::fromLocal8Bit(dev->getName().toLatin1()), this);
+                        menu.addAction(action1);
+                        QObject::connect(action1,SIGNAL(triggered()),this,SLOT(createTerminal()));
+                        menu.addSeparator();
+                        QAction *action2 = new QAction(QString::fromLocal8Bit("’ŒÀ‘ 2"), this);
+                        action2->setIcon(QIcon(":/img/img/workstation_256.png"));
+                        menu.addAction(action2);
+                        // menu.addAction();
+                        menu.exec(me->globalPos()); 
+                    }
+                    i++;
 
-
-                    //QListIterator<Device *> it(items);
-                    /*
-                 qDebug()<<"dev x = "<<dev->x();
-                 qDebug()<<"dev y = "<<dev->y();
-                 */
                 }
-                /*
-            if (dev->x()>)
-            qDebug()<<"dev x = "<<dev->x();
-            qDebug()<<"dev y = "<<dev->y();
-            */
-                //delete dev;
-                i++;
-                qDebug()<<"********************** ";
             }
 
 
-            qDebug()<<"iterator end";
-
-
-
-        }
-        this->updateGL();
-        /*
+            qDebug()<<"MouseButtonRelease2 ";
             this->shiftMode = false;
             this->selectMode = false;
             this->selectedArea = QRect();
-            //this->movingBlock = 0;
+            this->movingBlock = 0;
             for (int i=items.count()-1;i>=0;i--)
             {
+                qDebug()<<"emit0";
                 Device * theBlock = items[i];
-               /*
-                if ((tmpX>theBlock->x()) && (tmpX < theBlock->x()+theBlock->width()) && (tmpY>theBlock->y()) && (tmpY < theBlock->y()+theBlock->height()))
+                 if (IS(this->tmpX,theBlock->x(),theBlock->width())&&IS(this->tmpY,theBlock->y(),theBlock->height()))
                 {
+                 /*
+                 }
+                if ((tmpX>theBlock->x()) && (tmpX < theBlock->x()+theBlock->width())
+                    && (tmpY>theBlock->y()) && (tmpY < theBlock->y()+theBlock->height()))
+                {*/
+                    qDebug()<<"emit1";
                     if (tmpBeg>-1)
                     {
                          this->tmpEnd = i;
                          if (tmpBeg!=tmpEnd)
-                              emit this->newLinkAdded(tmpBeg, tmpEnd);
+                         {
+                             emit this->newLinkAdded(tmpBeg, tmpEnd);
+                             SlotAddChannel(tmpBeg,tmpEnd);
+                             qDebug()<<"emit this->newLinkAdded(tmpBeg, tmpEnd);";
+                            }
                     }
                     break;
                 }
              }
-
              tmpBeg = -1;
              tmpEnd = -1;
-             */
-                //this->updateGL();
 
-            }
-            if ((evnt->type() == QEvent::MouseMove) && (shiftMode))
-            {
-                /*
+            qDebug()<<"MouseButtonRelease2  end";
+            this->updateGL();
+
+        }
+        if ((evnt->type() == QEvent::MouseMove) && (shiftMode))
+        {
+            /*
         this->shiftTranslateX = me->pos().x() - this->shiftX;
         this->shiftTranslateY = me->pos().y() -  this->shiftY;
         this->updateGL();
         */
-            }
-            if ((evnt->type() == QEvent::MouseMove) /*&& (movingBlock)*/ && (!shiftMode))
-            {/*
-        if (tmpBeg == -1)
-            movingBlock->move(tmpX-this->blockX, tmpY-this->blockY);
-        this->updateGL();
-        */
-            }
-            if ((evnt->type() == QEvent::MouseMove) && (this->selectMode) && (!shiftMode))
-            {
-                /*
+        }
+        if ((evnt->type() == QEvent::MouseMove) && (movingBlock) && (!shiftMode))
+        {
+            qDebug()<<"QEvent::MouseMove) && (movingBlock) && (!shiftMode) ";
+            if (tmpBeg == -1)
+                movingBlock->move(tmpX-this->blockX, tmpY-this->blockY);
+            this->updateGL();
+
+        }
+
+        if ((evnt->type() == QEvent::MouseMove) && (this->selectMode) && (!shiftMode))
+        {
+            /*
         this->selectedArea.setBottomRight(QPoint(me->pos()));
         this->updateGL();
         */
-            }
-            if (evnt->type() == QEvent::MouseButtonDblClick)
-            {
-                /*
+        }
+        if (evnt->type() == QEvent::MouseButtonDblClick)
+        {
+            /*
         if (me->button() == Qt::MidButton)
         {
             this->shiftTranslateX = 0;
@@ -620,14 +942,11 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
         }
         this->updateGL();
         */
-            }
-            /*
-    if (this->shiftMode)
-        this->setCursor(QCursor(Qt::ClosedHandCursor));
-    else
-        this->setCursor(Qt::ArrowCursor);*/
-            return QWidget::eventFilter(obj,evnt);
         }
+
+
+        return QWidget::eventFilter(obj,evnt);
+    }
     //---------------------------------------
 
     //--- ı”‘¡Œ¡◊Ã…◊¡≈‘ … ◊œ⁄◊“¡›¡≈‘ –“…⁄Œ¡À “≈ƒ¡À‘…“œ◊¡Œ…— ”◊—⁄≈  ---
@@ -643,13 +962,13 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
     //---------------------------------------
 
 
-void Field::createTerminal()
-{
-    TelnetForm *w = new TelnetForm();
-    PresenterTelnet *presenterTelnet = new PresenterTelnet(w);
-    Q_UNUSED(presenterTelnet);
-    w->show();
-}
+    void Field::createTerminal()
+    {
+        TelnetForm *w = new TelnetForm();
+        PresenterTelnet *presenterTelnet = new PresenterTelnet(w);
+        Q_UNUSED(presenterTelnet);
+        w->show();
+    }
 
     //“¡¬œ‘¡ ”œ ”–…”ÀœÕ ‹Ã≈Õ≈Œ‘œ◊ ÕŒ≈Õœ”»≈ÕŸ
     void Field::addItem(int x, int y/*QString name,int type,QString address*/,QString image,QString name)
@@ -812,3 +1131,171 @@ void Field::clearLinks()
 QList <net_channel *> work_field::getLstChannel()
 {return links;}
 */
+
+    void Field::appendLink(Link * newLink)
+    {
+        if (newLink)
+            this->links.append(newLink);
+    }
+    void Field::delLink(int num)
+    {
+        if (!((num>=0) && (num<this->links.size())))
+            return;
+        Link * theLink = this->links.at(num);
+        delete theLink;
+        links.removeAt(num);
+    }
+
+
+    void Field::delItem(int num)
+    {
+        qDebug()<<"Field::delItem";
+        if (!((num>=0) && (num<this->items.size())))
+            return;
+        Device * theItem = items.at(num);
+        delete theItem;
+        items.removeAt(num);
+    }
+
+    int Field::getItemsCount() const
+    {
+        qDebug()<<"Field::getItemsCount";
+        return this->items.size();
+
+    }
+
+    void Field::clearItems()
+    {
+        qDebug()<<"Field::clearItems ";
+        this->clearLinks();
+        while (items.size())
+        {
+            Device * theItem = items.last();
+            delete theItem;
+            items.removeLast();
+        }
+        this->items.clear();
+    }
+
+    Device * Field::getItem(int num) const
+    {
+        qDebug()<<"Field::getItem";
+        if ((num>=0) && (num<this->items.size()))
+            return items.at(num);
+        else
+            return 0;
+    }
+
+    Device * Field::getLastSelectedItem()
+    {
+        qDebug()<<"Field::getLastSelectedItem";
+        int num = -1;
+        for (int i=items.size()-1;i>=0;i--)
+        {
+            Device * theItem = items.at(i);
+            if (theItem->getIsSelected())
+            {
+                num = i;
+                break;
+            };
+        }
+        for (int i=0;i<num;i++)
+            items.at(i)->setIsSelected(false);
+        return this->getItem(num);
+    }
+
+    Link * Field::addLinkByNum(int begNum, int endNum)
+    {
+        qDebug()<<"Field::addLinkByNum";
+        Device * beg = this->getItem(begNum);
+        Device * end = this->getItem(endNum);
+        if ((beg==0) || (end==0))
+            return 0;
+        return this->addLink(beg, end);
+
+    }
+    Link * Field::addLink(Device * beg, Device * end)
+    {
+        qDebug()<<"Field::addLink";
+    Link * theLink = new Link(beg, end,"",0,4);
+    this->links.append(theLink);
+    return theLink;
+    }
+    Link * Field::getLink(int num) const
+    {
+        if ((num>=0) && (num<this->links.size()))
+        return links.at(num);
+    else
+        return 0;
+    }
+    int Field::getLinksCount() const
+    {
+        qDebug()<<"Field::getLinksCount";
+        return this->links.size();
+    }
+void Field::clearLinks()
+{
+     qDebug()<<"Field::clearLinks";
+    while (links.size())
+    {
+        Link * theLink = links.last();
+        delete theLink;
+        links.removeLast();
+    }
+    this->links.clear();
+}
+void Field::SlotAddChannel(int indBeg, int indEnd)
+{
+     qDebug()<<"SlotAddChannel";
+    for (int i=0;i<this->getLinksCount();i++)
+    {
+        Link * chanel = this->getLink(i);
+        int beg = -1;
+        int end = -1;
+        for (int j=0; j<this->getItemsCount(); j++)
+        {
+            Device * nd = this->getItem(j);
+            if (nd == chanel->begining)
+                beg = j;
+            if (nd == chanel->ending)
+                end = j;
+        }
+        if ((beg == indBeg) && (end == indEnd))
+        {
+            /*
+            QMessageDlg(mtWarning, this, this->windowTitle().append(0x20),
+                        QString::fromLocal8Bit(msgChannel),QString::fromLocal8Bit(msgCancel));
+            */
+            return;
+        }
+    }
+     qDebug()<<"SlotAddChannel Device";
+    Device * blockBegin = this->getItem(indBeg);
+    Device * blockEnd = this->getItem(indEnd);
+
+    //‰Ë‡ÎÓ„ Ò‚ÓÈÒÚ‚ Í‡Ì‡Î‡ Ò‚ˇÁË
+    /*
+    frm_add *add = new frm_add(this);
+        add->setType(1);
+    add->exec();*/
+    //if(add->result()==QDialog::Accepted)
+    //{
+        //ÒÓÁ‰‡ÂÏ Í‡Ì‡Î Ò‚ˇÁË
+        Link * ch = new Link(blockBegin, blockEnd,"ÈÕ—",0,4);
+         //Link(Device * first, Device * last, QString theName, int theType, int theWidth);
+        //‰Ó·‡‚ÎˇÂÏ Â„Ó Ì‡ ‡·Ó˜ÂÂ ÔÓÎÂ
+        this->appendLink(ch);
+        //ÒÓÁ‰‡ÂÏ ÒÚÛÍÚÛÛ ‰Îˇ ÓÚÓ·‡ÊÂÌËˇ Í‡Ì‡Î‡ ‚ Ú‡·ÎËˆÂ
+        /*
+        StChan *cha = new Struct_Channel(add->getName(),blockBegin->getName(),blockEnd->getName(),
+                                         QString::fromLocal8Bit(uzNotActiv),add->getLocalType());
+        lstTblChan<<cha;
+        if(chan)
+        {
+            chanel->CreateTblChannel(lstTblChan);
+        }
+        */
+
+    //}
+    //delete add;
+}

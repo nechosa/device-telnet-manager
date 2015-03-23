@@ -151,6 +151,29 @@
    <addaction name="actionShowInfo"/>
    <addaction name="actionConfig"/>
   </widget>
+  <widget class="QToolBar" name="toolBar_3">
+   <property name="windowTitle">
+    <string>toolBar_3</string>
+   </property>
+   <property name="toolTip">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>72</width>
+     <height>72</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>RightToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_route1"/>
+   <addaction name="action_route2"/>
+   <addaction name="action_route3"/>
+  </widget>
   <action name="action">
    <property name="text">
     <string>Новая мнемосхема</string>
@@ -288,6 +311,54 @@
    </property>
    <property name="toolTip">
     <string>Настройка</string>
+   </property>
+  </action>
+  <action name="action_route1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/route1.png</normaloff>
+     <normalon>:/img/img/route1_1.png</normalon>:/img/img/route1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Route1</string>
+   </property>
+   <property name="toolTip">
+    <string>Маршрут 1</string>
+   </property>
+  </action>
+  <action name="action_route2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/route2.png</normaloff>
+     <normalon>:/img/img/route2_1.png</normalon>:/img/img/route2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Route2</string>
+   </property>
+   <property name="toolTip">
+    <string>Маршрут 2</string>
+   </property>
+  </action>
+  <action name="action_route3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/img/img/route3.png</normaloff>
+     <normalon>:/img/img/route3_1.png</normalon>:/img/img/route3.png</iconset>
+   </property>
+   <property name="text">
+    <string>Route3</string>
+   </property>
+   <property name="toolTip">
+    <string>Маршрут 3</string>
    </property>
   </action>
  </widget>

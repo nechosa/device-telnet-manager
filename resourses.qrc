@@ -17,5 +17,13 @@
         <file>img/workstation_128.png</file>
         <file>img/workstation_72.png</file>
         <file>img/workstation_256.ico</file>
+        <file>img/route1.png</file>
+        <file>img/route2.png</file>
+        <file>img/route3.png</file>
+        <file>img/route1_1.png</file>
+        <file>img/route2_1.png</file>
+        <file>img/route3_1.png</file>
+        <file>img/numbering_close_256.png</file>
+        <file>img/numbering_add_256.png</file>
     </qresource>
 </RCC>

@@ -8,16 +8,40 @@
 #include <QEvent>
 #include <QMouseEvent>
 #include <QWidget>
+#include <QMetaEnum>
 #include "device.h"
+//#include "link.h"
+
 #include <QList>
+
+enum DeviceType
+{
+    DEFAULT,
+    COMPUTER,
+    ROUTER,
+    LINK
+};
 
 class Field : public QGLWidget
 {
     Q_OBJECT
+    //Q_ENUMS(DeviceType)
+     private:
+    DeviceType create_dev;
+public:
+    void setcheckDevice(DeviceType create_new_dev);
+    /*
+    private:
+    DeviceType create_dev;
+    public:
+    DeviceType setcheckDevice(DeviceType create_new_dev);
+*/
+
 protected:
     //Списки элементов
     QList <Device *> items;
-
+    QList <Link *> links;
+    //Link *lnk;
     //QList <net_channel *> links;
 
     GLfloat R1,G1,B1;//цвет шрадиентной заливки поля
@@ -26,7 +50,7 @@ protected:
     //int speedAnimation;//скорость анимации
     //QTime ani;// время анимации
 
-    //net_node * movingBlock;
+    Device * movingBlock;
 
     //переменные, необходимые для добавления связи
     bool flagAddLinkRegime;
@@ -56,10 +80,27 @@ public:
 
 
     //работа со списком элементов мнемосхемы
-
+    //Device
     virtual void addItem(int x, int y/*QString name, int type,QString address*/,QString image,QString name);
     virtual void appendItem(Device * newItem);
-   // virtual void mousePressEvent(QMouseEvent *event);
+    virtual void delItem(int num);
+    virtual int getItemsCount() const;
+
+    virtual void clearItems();
+    virtual Device * getItem(int num) const;
+    virtual Device * getLastSelectedItem();
+
+    //Link
+    virtual Link * addLinkByNum(int begNum, int endNum);
+    virtual Link * addLink(Device * beg, Device * end);
+    virtual void appendLink(Link * newLink);
+    virtual void delLink(int num);
+    virtual Link * getLink(int num) const;
+    virtual int getLinksCount() const;
+     virtual void clearLinks();
+
+
+    // virtual void mousePressEvent(QMouseEvent *event);
 
     /*virtual void delItem(int num);
     virtual net_node * getItem(int num) const;
@@ -113,13 +154,14 @@ public:
     //Возврат листа с описанием узлов и каналов связи
 
     QList <Device *> getLstNode();
-   /*
+    /*
     QList <net_channel *> getLstChannel();
     */
 
 public slots:
     virtual bool eventFilter(QObject * obj, QEvent * evnt);
     void createTerminal();
+    void SlotAddChannel(int indBeg, int indEnd);
 
 signals:
     // имитируется при ручном добавлении связи с помощью мыши, когда соединены два блока
@@ -128,6 +170,7 @@ signals:
     void SignalEdit();
     //имитируется при клике по каналу связи
     void SignalDelChan(int n);
+    void setDefault();
 };
 
 #endif // FIELD_H

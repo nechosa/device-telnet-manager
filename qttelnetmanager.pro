@@ -12,11 +12,12 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainform.cpp \
     field.cpp \
-    device.cpp
+    device.cpp #\
+    #link.cpp
 HEADERS += mainform.h \
     field.h \
-    device.h
+    device.h #\
+    #link.h
 FORMS += mainform.ui
 RESOURCES += resourses.qrc
-
 include(QtTelnetManager/QtTelnetManager.pri)
