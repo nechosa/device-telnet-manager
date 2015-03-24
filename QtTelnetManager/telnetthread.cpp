@@ -20,9 +20,9 @@ TelnetThread::TelnetThread(QObject * parent)
 
     connect(t, SIGNAL(message(const QString &)),this, SLOT(telnetMessage(const QString &)));
     connect(t, SIGNAL(loginRequired()),this, SLOT(telnetLoginRequired()));
-    connect(t, SIGNAL(loginFailed()),this, SLOT(telnetLoginFailed()));
-    connect(t, SIGNAL(loggedOut()),this, SLOT(telnetLoggedOut()));
-    connect(t, SIGNAL(loggedIn()),this, SLOT(telnetLoggedIn()));
+    //connect(t, SIGNAL(loginFailed()),this, SLOT(telnetLoginFailed()));
+    //connect(t, SIGNAL(loggedOut()),this, SLOT(telnetLoggedOut()));
+    //connect(t, SIGNAL(loggedIn()),this, SLOT(telnetLoggedIn()));
     connect(t, SIGNAL(connectionError(QAbstractSocket::SocketError)),this, SLOT(telnetConnectionError(QAbstractSocket::SocketError)));
 
 }
@@ -85,7 +85,7 @@ void TelnetThread::run()
 
     //
     mutex.lock();
-    QString host = "172.16.22.109";//t_ipaddr;
+    QString host = "172.16.22.34";//t_ipaddr;
     //
     QString message = t_msg;
 

@@ -40,12 +40,12 @@
     <property name="title">
      <string>Файл</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
-    <addaction name="action_4"/>
+    <addaction name="action_new"/>
+    <addaction name="action_open"/>
+    <addaction name="action_save"/>
+    <addaction name="action_save_as"/>
     <addaction name="separator"/>
-    <addaction name="action_5"/>
+    <addaction name="action_save_image"/>
     <addaction name="separator"/>
     <addaction name="action_exit"/>
    </widget>
@@ -174,27 +174,27 @@
    <addaction name="action_route2"/>
    <addaction name="action_route3"/>
   </widget>
-  <action name="action">
+  <action name="action_new">
    <property name="text">
     <string>Новая мнемосхема</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_open">
    <property name="text">
     <string>Открыть мнемосхему</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="action_save">
    <property name="text">
     <string>Сохранить мнемосхему</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="action_save_as">
    <property name="text">
     <string>Сохранить мнемосхему как ...</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="action_save_image">
    <property name="text">
     <string>Сохранить изображение</string>
    </property>
@@ -319,8 +319,8 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/img/img/route1.png</normaloff>
-     <normalon>:/img/img/route1_1.png</normalon>:/img/img/route1.png</iconset>
+     <normaloff>:/img/img/inverse_kinematics_256_1.png</normaloff>
+     <normalon>:/img/img/inverse_kinematics_ok_256_1.png</normalon>:/img/img/inverse_kinematics_256_1.png</iconset>
    </property>
    <property name="text">
     <string>Route1</string>
@@ -335,8 +335,9 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/img/img/route2.png</normaloff>
-     <normalon>:/img/img/route2_1.png</normalon>:/img/img/route2.png</iconset>
+     <normaloff>:/img/img/inverse_kinematics_256_2.png</normaloff>
+     <normalon>:/img/img/inverse_kinematics_ok_256_2.png</normalon>
+     <activeon>:/img/img/inverse_kinematics_ok_256_2.png</activeon>:/img/img/inverse_kinematics_256_2.png</iconset>
    </property>
    <property name="text">
     <string>Route2</string>
@@ -351,8 +352,8 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/img/img/route3.png</normaloff>
-     <normalon>:/img/img/route3_1.png</normalon>:/img/img/route3.png</iconset>
+     <normaloff>:/img/img/inverse_kinematics_256_3.png</normaloff>
+     <activeon>:/img/img/inverse_kinematics_ok_256_3.png</activeon>:/img/img/inverse_kinematics_256_3.png</iconset>
    </property>
    <property name="text">
     <string>Route3</string>

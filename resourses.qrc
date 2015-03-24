@@ -12,11 +12,6 @@
         <file>img/router-md.png</file>
         <file>img/router-th.png</file>
         <file>img/server_256.png</file>
-        <file>img/dedicated_server_48.bmp</file>
-        <file>img/dedicated_server_128.bmp</file>
-        <file>img/workstation_128.png</file>
-        <file>img/workstation_72.png</file>
-        <file>img/workstation_256.ico</file>
         <file>img/route1.png</file>
         <file>img/route2.png</file>
         <file>img/route3.png</file>
@@ -25,5 +20,20 @@
         <file>img/route3_1.png</file>
         <file>img/numbering_close_256.png</file>
         <file>img/numbering_add_256.png</file>
+        <file>img/inverse_kinematics_256_1.png</file>
+        <file>img/inverse_kinematics_256_2.png</file>
+        <file>img/inverse_kinematics_256_3.png</file>
+        <file>img/inverse_kinematics_ok_256_1.png</file>
+        <file>img/inverse_kinematics_ok_256_2.png</file>
+        <file>img/inverse_kinematics_ok_256_3.png</file>
+        <file>img/router-hi_disable.png</file>
+        <file>img/router-hi_enable.png</file>
+        <file>img/workstation_256_disable.png</file>
+        <file>img/workstation_256_enable.png</file>
+        <file>img/workstation_128.png</file>
+        <file>img/router-th_enable.png</file>
+        <file>img/router-th_disable.png</file>
+        <file>img/workstation_128_disable.png</file>
+        <file>img/workstation_128_enable.png</file>
     </qresource>
 </RCC>

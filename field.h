@@ -10,24 +10,19 @@
 #include <QWidget>
 #include <QMetaEnum>
 #include "device.h"
+#include "const.h"
 //#include "link.h"
 
 #include <QList>
-
-enum DeviceType
-{
-    DEFAULT,
-    COMPUTER,
-    ROUTER,
-    LINK
-};
 
 class Field : public QGLWidget
 {
     Q_OBJECT
     //Q_ENUMS(DeviceType)
-     private:
+
+private:
     DeviceType create_dev;
+
 public:
     void setcheckDevice(DeviceType create_new_dev);
     /*
@@ -42,7 +37,6 @@ protected:
     QList <Device *> items;
     QList <Link *> links;
     //Link *lnk;
-    //QList <net_channel *> links;
 
     GLfloat R1,G1,B1;//цвет шрадиентной заливки поля
     GLfloat R2,G2,B2;
@@ -81,12 +75,13 @@ public:
 
     //работа со списком элементов мнемосхемы
     //Device
-    virtual void addItem(int x, int y/*QString name, int type,QString address*/,QString image,QString name);
+    virtual void addItem(int x, int y,DeviceType type/*QString name, int type,QString address,QString image,QString name*/);
     virtual void appendItem(Device * newItem);
     virtual void delItem(int num);
     virtual int getItemsCount() const;
 
     virtual void clearItems();
+     virtual void setActive(bool active);
     virtual Device * getItem(int num) const;
     virtual Device * getLastSelectedItem();
 
@@ -97,7 +92,7 @@ public:
     virtual void delLink(int num);
     virtual Link * getLink(int num) const;
     virtual int getLinksCount() const;
-     virtual void clearLinks();
+    virtual void clearLinks();
 
 
     // virtual void mousePressEvent(QMouseEvent *event);

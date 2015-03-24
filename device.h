@@ -2,6 +2,7 @@
 #define DEVICE_H
 
 #include "field.h"
+#include "const.h"
 #include <QImage>
 #include <GL/gl.h>
 
@@ -13,7 +14,16 @@ enum EnumType
     Router = 2
 };
 
+class Point
+{
+    private:
+    int *x;
+    int *y;
+    public:
+        QVector <int> center;
+};
 // класс элемента на графической мнемосхеме
+//template <typename T>
 class Device//: public Field
 {
 
@@ -27,6 +37,10 @@ class Device//: public Field
    Field * parent; // рабочее поле
 
     int X,Y; //координаты на мнемосхеме
+    //typedef T *center;
+
+    //int numberLinks;
+
     QString Name;
     int H,W; //высота и ширина на мнемосхеме
 
@@ -38,6 +52,7 @@ class Device//: public Field
     GLfloat R1S,G1S,B1S;
     GLfloat R2S,G2S,B2S;
     GLfloat R1L,G1L,B1L;
+    //int link;
 
     //int X,Y; // координаты на мнемосхеме
    /* int heigth,width; // высота и ширина на мнемосхеме
@@ -51,6 +66,7 @@ class Device//: public Field
 
 public:
     Device(Field *work_field,int tmpX, int tmpY/*GLfloat tmpX, GLfloat tmpY*/,QString image, QString myName);
+    Device(Field *work_field,int tmpX, int tmpY,DeviceType type);
 
     virtual ~Device();
     bool isSel;//ОПХГМЮЙ БШДЕКЕМХЪ ЙНЛОНМЕМРЮ
@@ -67,9 +83,10 @@ public:
     */
     virtual void move(int x, int y);
 
-
-      virtual int x();
-      virtual int y();
+    int link;
+    virtual int x();
+    //virtual int getx();
+    virtual int y();
        virtual QString getName();
 
     virtual int width();
@@ -136,7 +153,10 @@ public:
     virtual void setIsSelected(bool fl);
     virtual bool isSelected()  ;
 
+    bool active;
+
     //ПХЯНБЮМХЕ КХМХХ ЯБЪГХ
+    void paintPoint(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2,GLfloat KS,int R);
     virtual void paint(int aniStep);
 
     //БНГБПЮЫЮЕР НАКЮЯРЭ Б ЖЕМРПЕ, ЙНРНПСЧ ЛНФМН ХЯОНКЭГНБЮРЭ ДКЪ БШДЕКЕМХЪ ЯБЪГХ

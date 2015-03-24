@@ -6,6 +6,7 @@
 #include "presentertelnet.h"
 #include "telnetform.h"
 #include "device.h"
+#include <QList>
 
 //#include "link.h"
 
@@ -52,43 +53,7 @@ Field::~Field()
 void Field::setcheckDevice(DeviceType create_new_dev)
 {
     create_dev = create_new_dev;
-    /*
-    switch(create_dev)
-    {
-        case COMPUTER:
-        qDebug()<<"COMPUTER";
-        break;
-        case ROUTER:
-        qDebug()<<"ROUTER";
-        break;
-        default:
-        qDebug()<<"DEFAULT";
-        break;
-    }
-    */
 }
-
-
-//утсанавливает и возвращает признак и скорость анимации
-/*
-void Field::setIsAnimation(bool isAni)
-{
-    this->flagAnimation = isAni;
-}
-bool Field::isAnimation()
-{
-    return this->flagAnimation;
-}
-void Field::setAnimationSpeed(int newSpeed)
-{
-    this->speedAnimation = newSpeed;
-}
-int Field::getAnimationSpeed()
-{
-    return this->speedAnimation;
-}
-*/
-//---------------------------------------
 
 //устанавливает и возвращает цвет заливки рабочего поля
 void Field::setColor(int r1, int g1, int b1, int r2, int g2, int b2)
@@ -108,15 +73,8 @@ void Field::getColor(int &r1, int &g1, int &b1, int &r2, int &g2, int &b2)
 //стандартные функции OpenGL
 void Field::initializeGL()
 {
-    //glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
-    //glDisable(GL_ALPHA_TEST);
-    //glDisable(GL_LOGIC_OP);
     glClearColor(1,1,1,1);
-    //qglClearColor(Qt::white);
-    // glClearColor(Qt::white);
-    //glw.qglClearColor(Qt::white);
-    //glClear(GL_COLOR_BUFFER_BIT);
     glShadeModel(GL_SMOOTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -228,7 +186,7 @@ void Field::paintGL()
 
 
         Device * begining = this->items[this->tmpBeg];
-        GLfloat x1 = begining->x()+begining->width()-50;
+        GLfloat x1 = begining->x()+begining->width()/2-50;
         GLfloat y1 = begining->y()+begining->height()/2-20;
 
         glEnable(GL_MULTISAMPLE);
@@ -459,77 +417,16 @@ void Field::mousePressEvent(QMouseEvent *event)
 //--- Фильтр событий ---
 bool Field::eventFilter(QObject *obj, QEvent *evnt)
 {
-    //qDebug()<<"Фильтр событий ";
+    //qDebug()<<"eventFilter ";
     QMouseEvent * me = dynamic_cast<QMouseEvent *>(evnt);
     if (me)
     {
         this->tmpX = me->pos().x()-this->shiftTranslateX;
         this->tmpY = me->pos().y()-this->shiftTranslateY;
-
-        //qDebug()<<"dev y = "<<dev->y();
+        //qDebug()<<" this->tmpY = "<< this->tmpY;
+        //qDebug()<<" this->tmpX = "<< this->tmpX;
 
     }
-
-    /*
-    if ((evnt->type() == QEvent::MouseMove)&&(QApplication::mouseButtons()==Qt::LeftButton))
-    {
-
-        qDebug()<<"MouseMove ";
-        qDebug()<<"tmpX"<<this->tmpX<<"tmpY"<<this->tmpY;
-
-        QListIterator<Device *> it(items);
-        while(it.hasNext())
-        {
-
-            int i = 1;
-            //QString text = "Устройство"+ QString::number(i);
-            Device * dev = it.next();
-            //#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
-            if (IS(this->tmpX,dev->x(),10)&&IS(this->tmpY,dev->y(),10))
-            {
-                qDebug()<<"MouseButtonPress++Left";
-                this->shiftX = this->tmpX;
-                this->shiftY = this->tmpY;
-
-            }
-            i++;
-
-        }
-        this->updateGL();
-    }
-    */
-
-
-
-
-
-    /*
-    switch (evnt->type())
-    {
-            case QEvent::MouseButtonPress:
-        //qDebug()<<"MouseButtonPress";
-
-        if (evnt->button()==Qt::RightButton)
-            {
-                qDebug()<<"MouseButtonPress RightButton";
-            }
-        break;
-            default:
-        //qDebug()<<"DEFAULT";
-        break;
-    }
-    */
-
-    /*
-        if ((evnt->type() == QEvent::MouseButtonPress)&&(QApplication::mouseButtons()==Qt::RightButton))
-    {
-             // qDebug()<<"MouseButtonPress Right";
-    }
-        if ((evnt->type() == QEvent::MouseButtonPress)&&(QApplication::mouseButtons()==Qt::LeftButton))
-    {
-          //  qDebug()<<"MouseButtonPress Left";
-        }
-        */
 
     if (evnt->type() == QEvent::MouseButtonPress)
     {
@@ -599,14 +496,14 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
 
             case COMPUTER:
                 qDebug()<<"COMPUTER";              
-                dev = new Device(this,this->tmpX,this->tmpY,":/img/img/workstation_128.png","Компьютер");
+                dev = new Device(this,this->tmpX,this->tmpY,create_dev);
                 this->appendItem(dev);
 
                 emit setDefault();
                 break;
             case ROUTER:
                 qDebug()<<"ROUTER1"<<shiftMode;
-                dev = new Device(this,this->tmpX,this->tmpY,":/img/img/router-th.png","Маршрутизатор");
+                dev = new Device(this,this->tmpX,this->tmpY,create_dev);
                 this->appendItem(dev);
                 emit setDefault();
                 break;
@@ -665,152 +562,9 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
 
             case DEFAULT:
             default:
-
-
-
-                /*
-                qDebug()<<"tmpX = "<<this->tmpX ;
-                qDebug()<<"tmpY = "<< this->tmpY ;
-                QListIterator<Device *> it(items);
-                while(it.hasNext())
-                {
-
-                    int i = 1;
-                    //QString text = "Устройство"+ QString::number(i);
-                    Device * dev = it.next();
-                    //#define IS(x1,x0,delta) ((x1>x0-delta)&&(x1<x0+delta))?1:0
-                    if (IS(this->tmpX,dev->x(),10)&&IS(this->tmpY,dev->y(),10))
-                    {
-                        qDebug()<<"MouseButtonPress RightButton++";
-
-                        qDebug()<<"MouseButtonPress RightButton";
-                        qDebug()<<"contextMenuEvent";
-
-                        QMenu menu(this);
-                        QAction *action1 = new QAction(QString::fromLocal8Bit(dev->getName().toLatin1()), this);
-                        menu.addAction(action1);
-                        QObject::connect(action1,SIGNAL(triggered()),this,SLOT(createTerminal()));
-                        menu.addSeparator();
-                        QAction *action2 = new QAction(QString::fromLocal8Bit("Пункт 2"), this);
-                        action2->setIcon(QIcon(":/img/img/workstation_256.png"));
-                        menu.addAction(action2);
-                        // menu.addAction();
-                        menu.exec(me->globalPos());
-                    }
-                    i++;
-
-                }
-            }
-            this->updateGL();
-            */
-
-                /*
-                this->shiftMode = true;
-                this->shiftX = this->tmpX;
-                this->shiftY = this->tmpY;
-                qDebug()<<"DEFAULT";
-                */
-                //this->selectedArea.setBottomRight(QPoint(me->pos()));
                 break;
             }
             qDebug()<<"LeftButton()!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-            /*
-        if (ui->action_add_comp->isChecked())
-        {
-            qDebug()<< "create COMP()";
-            //dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/workstation_256.png");
-            dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/workstation_128.png","Компьютер");
-            //dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/workstation_128.ico");
-            //dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/dedicated_server_128.bmp");
-
-            work_field->appendItem(dev);
-            //dev = new Device(work_field,me->pos().x(),me->pos().y());
-            //   dev = new Device(work_field,work_field->tmpX,work_field->tmpY);
-        }
-        if (ui->action_add_router->isChecked())
-        {
-            qDebug()<< "create ROUTER()";
-            dev = new Device(work_field,me->pos().x(),me->pos().y(),":/img/img/router-th.png","Маршрутизатор");
-            work_field->appendItem(dev);
-            //dev = new Device();
-            //dev = new Device(work_field,work_field->tmpX,work_field->tmpY);
-        }
-        if (ui->action_add_linc->isChecked())
-        {
-            qDebug()<< "create LINK()";
-            //lnk = new Link(work_field,me->pos().x(),me->pos().y(),":/img/img/router-th.png","Маршрутизатор");
-           // work_field->appendLink();
-            /*
-              dev = new Device(work_field,me->pos().x(),me->pos().y(),"");
-              work_field->appendItem(dev);
-
-            //  dev = new Device();
-            // dev = new Device(work_field,work_field->tmpX,work_field->tmpY);
-        }
-        // dev = new Device(work_field,me->pos().x(),me->pos().y());
-        //work_field->add
-
-        }
-        //event->button()==Qt::RightButton
-
-        // qDebug()<<"MouseButtonPress";
-
-        if (me->button() == Qt::MidButton)
-        {
-            this->shiftMode = true;
-            this->shiftX = this->tmpX;
-            this->shiftY = this->tmpY;
-        }
-        else
-        {
-            this->additionSelectionMode = (me->button() == Qt::RightButton);
-            this->movingBlock = 0;
-            this->tmpBeg = -1;
-            this->selectMode = false;
-
-            for (int i=links.size()-1;(i>=0);i--)
-            {
-                Link * lnk = this->links.at(i);
-                QPoint shiftedPoint(tmpX, tmpY);
-                if (lnk->getCentralArea().contains(shiftedPoint))
-                {
-                    this->movingBlock = lnk->begining;
-                    for (int j=0;j<this->items.size();j++)
-                    {
-                        if (items.at(j) == this->movingBlock)
-                        {
-                            this->tmpBeg = j;
-                            break;
-                        }
-                    }
-                    this->delLink(i);
-                    emit SignalDelChan(i);
-                    break;
-                }
-
-            }
-
-            for (int i=items.count()-1;i>=0;i--)
-            {
-                Device * theBlock = items[i];
-                if ((tmpX>theBlock->x()) && (tmpX < theBlock->x()+theBlock->width())
-                    && (tmpY>theBlock->y()) && (tmpY < theBlock->y()+theBlock->height()))
-                    {
-                    this->blockX = tmpX - theBlock->x();
-                    this->blockY = tmpY  - theBlock->y();
-                    this->movingBlock = theBlock;
-                    if (additionSelectionMode)
-                        this->tmpBeg = i;
-                    break;
-                }
-            }
-
-            if ((!movingBlock) && (tmpBeg==-1))
-            {
-                this->selectMode = true;
-                this->selectedArea.setTopLeft(me->pos());
-                this->selectedArea.setBottomRight(me->pos());
-            }*/
             this->updateGL();
         }
 
@@ -880,8 +634,10 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
                          if (tmpBeg!=tmpEnd)
                          {
                              emit this->newLinkAdded(tmpBeg, tmpEnd);
+                                qDebug()<<"emit slot;";
                              SlotAddChannel(tmpBeg,tmpEnd);
-                             qDebug()<<"emit this->newLinkAdded(tmpBeg, tmpEnd);";
+
+                             qDebug()<<"emit !!! this->newLinkAdded(tmpBeg, tmpEnd);";
                             }
                     }
                     break;
@@ -971,9 +727,9 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
     }
 
     //работа со списком элементов мнемосхемы
-    void Field::addItem(int x, int y/*QString name,int type,QString address*/,QString image,QString name)
+    void Field::addItem(int x, int y,DeviceType type/*QString name,int type,QString address,QString image,QString name*/)
     {
-        Device * theItem = new Device(this,x,y,image,name);
+        Device * theItem = new Device(this,x,y,type);
         //net_node * theItem = new net_node(this, name, type,address,300,150);
         this->items.append(theItem);
     }
@@ -983,109 +739,6 @@ bool Field::eventFilter(QObject *obj, QEvent *evnt)
         if (newItem)
             items.append(newItem);
     }
-    /*
-void Field::delItem(int num)
-{
-    if (!((num>=0) && (num<this->items.size())))
-        return;
-    net_node * theItem = items.at(num);
-    delete theItem;
-    items.removeAt(num);
-}
-net_node * Field::getItem(int num) const
-{
-    if ((num>=0) && (num<this->items.size()))
-        return items.at(num);
-    else
-        return 0;
-}
-
-int Field::getItemsCount() const
-{
-    return this->items.size();
-}
-void Field::clearItems()
-{
-    this->clearLinks();
-    while (items.size())
-    {
-        net_node * theItem = items.last();
-        delete theItem;
-        items.removeLast();
-    }
-    this->items.clear();
-}
-net_node * Field::getLastSelectedItem()
-{
-    int num = -1;
-    for (int i=items.size()-1;i>=0;i--)
-    {
-        net_node * theItem = items.at(i);
-        if (theItem->getIsSelected())
-        {
-            num = i;
-            break;
-        };
-    }
-    for (int i=0;i<num;i++)
-        items.at(i)->setIsSelected(false);
-    return this->getItem(num);
-}
-*/
-    //---------------------------------------
-
-    /*
-//работа со списками связей элементов мнемосхемы
-net_channel * Field::addLinkByNum(int begNum, int endNum)
-{
-    net_node * beg = this->getItem(begNum);
-    net_node * end = this->getItem(endNum);
-    if ((beg==0) || (end==0))
-        return 0;
-    return this->addLink(beg, end);
-}
-net_channel * Field::addLink(net_node * beg, net_node * end)
-{
-    net_channel * theLink = new net_channel(beg, end,"",0,4);
-    this->links.append(theLink);
-    return theLink;
-}
-void Field::appendLink(net_channel * newLink)
-{
-    if (newLink)
-        this->links.append(newLink);
-}
-void Field::delLink(int num)
-{
-    if (!((num>=0) && (num<this->links.size())))
-        return;
-    net_channel * theLink = this->links.at(num);
-    delete theLink;
-    links.removeAt(num);
-}
-net_channel * Field::getLink(int num) const
-{
-    if ((num>=0) && (num<this->links.size()))
-        return links.at(num);
-    else
-        return 0;
-}
-int Field::getLinksCount() const
-{
-    return this->links.size();
-}
-void Field::clearLinks()
-{
-    while (links.size())
-    {
-        net_channel * theLink = links.last();
-        delete theLink;
-        links.removeLast();
-    }
-    this->links.clear();
-}
-//---------------------------------------
-*/
     //установка и возврат значении сдвигов(перемещений)
     void Field::setShiftTranslateX(int newX)
     {
@@ -1127,10 +780,6 @@ void Field::clearLinks()
     {
         return items;
     }
-    /*
-QList <net_channel *> work_field::getLstChannel()
-{return links;}
-*/
 
     void Field::appendLink(Link * newLink)
     {
@@ -1244,6 +893,23 @@ void Field::clearLinks()
     }
     this->links.clear();
 }
+
+void Field::setActive(bool active)
+{
+     qDebug()<<"Field::setActive";
+    qDebug()<<"links.size()"<< links.size();
+
+       for (int i=links.size()-1;(i>=0);i--)
+            {
+                Link * lnk = this->links.at(i);
+                lnk->active = active;
+                lnk->paint(0);
+                 qDebug()<<"iter";
+               //  qDebug()<<"Element"<<*lnk;
+            }
+    qDebug()<<links;
+    qDebug()<<"Field::end iter";
+}
 void Field::SlotAddChannel(int indBeg, int indEnd)
 {
      qDebug()<<"SlotAddChannel";
@@ -1271,7 +937,9 @@ void Field::SlotAddChannel(int indBeg, int indEnd)
     }
      qDebug()<<"SlotAddChannel Device";
     Device * blockBegin = this->getItem(indBeg);
+    blockBegin->link++;
     Device * blockEnd = this->getItem(indEnd);
+    blockEnd->link++;
 
     //ДХЮКНЦ ЯБНИЯРБ ЙЮМЮКЮ ЯБЪГХ
     /*
