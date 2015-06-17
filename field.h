@@ -8,12 +8,13 @@
 #include <QEvent>
 #include <QMouseEvent>
 #include <QWidget>
-#include <QMetaEnum>
 #include "device.h"
 #include "const.h"
-//#include "link.h"
+#include "link.h"
+#include "text.h"
 
 #include <QList>
+
 
 class Field : public QGLWidget
 {
@@ -36,6 +37,15 @@ protected:
     //Списки элементов
     QList <Device *> items;
     QList <Link *> links;
+
+    //QList<T> routes;
+    //QList <QList <Link *> > routes; //количество маршрутов
+
+    QList <Link *> route1;
+    QList <Link *> route2;
+    QList <Link *> route3;
+
+    //QList <Link> route3;
     //Link *lnk;
 
     GLfloat R1,G1,B1;//цвет шрадиентной заливки поля
@@ -45,10 +55,14 @@ protected:
     //QTime ani;// время анимации
 
     Device * movingBlock;
+    Text * movingText;
+    Text * movingText2;
 
     //переменные, необходимые для добавления связи
     bool flagAddLinkRegime;
     int tmpBeg;
+    int tmpText;
+    int tmpText2;
     int tmpEnd;
     GLfloat tmpX;
     GLfloat tmpY;
@@ -58,6 +72,9 @@ protected:
     GLfloat shiftY;
     GLfloat shiftTranslateX;
     GLfloat shiftTranslateY;
+
+    GLfloat t_blockX;
+    GLfloat t_blockY;
 
     bool shiftMode;
     bool selectMode;
@@ -81,7 +98,10 @@ public:
     virtual int getItemsCount() const;
 
     virtual void clearItems();
-     virtual void setActive(bool active);
+    virtual void setActive(bool active);
+    virtual void setInfo(bool active);
+    virtual void showRoute(int route,bool active);
+    virtual void addRoute(int route);
     virtual Device * getItem(int num) const;
     virtual Device * getLastSelectedItem();
 
@@ -149,13 +169,14 @@ public:
     //Возврат листа с описанием узлов и каналов связи
 
     QList <Device *> getLstNode();
-    /*
-    QList <net_channel *> getLstChannel();
-    */
+
+    QList <Link *> getLstChannel();
+
 
 public slots:
     virtual bool eventFilter(QObject * obj, QEvent * evnt);
     void createTerminal();
+    void createProperty();
     void SlotAddChannel(int indBeg, int indEnd);
 
 signals:

@@ -35,5 +35,41 @@
         <file>img/router-th_disable.png</file>
         <file>img/workstation_128_disable.png</file>
         <file>img/workstation_128_enable.png</file>
+        <file>img/radio_128.png</file>
+        <file>img/radio_256.png</file>
+        <file>img/wifi_128.png</file>
+        <file>img/wifi_256.png</file>
+        <file>img/route/inverse_kinematics_256.png</file>
+        <file>img/route/inverse_kinematics_add_256.png</file>
+        <file>img/route/inverse_kinematics_back_256.png</file>
+        <file>img/route/inverse_kinematics_cancel_256.png</file>
+        <file>img/route/inverse_kinematics_clock_256.png</file>
+        <file>img/route/inverse_kinematics_close_256.png</file>
+        <file>img/route/inverse_kinematics_config_256.png</file>
+        <file>img/route/inverse_kinematics_down_256.png</file>
+        <file>img/route/inverse_kinematics_fav_256.png</file>
+        <file>img/route/inverse_kinematics_help_256.png</file>
+        <file>img/route/inverse_kinematics_info_256.png</file>
+        <file>img/route/inverse_kinematics_level_256.png</file>
+        <file>img/route/inverse_kinematics_lock_256.png</file>
+        <file>img/route/inverse_kinematics_next_256.png</file>
+        <file>img/route/inverse_kinematics_ok_256.png</file>
+        <file>img/route/inverse_kinematics_zoom_256.png</file>
+        <file>img/route/inverse_kinematics_write_256.png</file>
+        <file>img/route/inverse_kinematics_up_256.png</file>
+        <file>img/route/inverse_kinematics_unlock_256.png</file>
+        <file>img/route/inverse_kinematics_search_256.png</file>
+        <file>img/route/inverse_kinematics_save_256.png</file>
+        <file>img/route/inverse_kinematics_remove_256.png</file>
+        <file>img/route/inverse_kinematics_reload_256.png</file>
+        <file>img/route/inverse_kinematics_refresh_256.png</file>
+        <file>img/workstation_72.png</file>
+        <file>img/workstation_64.png</file>
+        <file>img/workstation_48.png</file>
+        <file>img/router_72.png</file>
+        <file>img/wifi_72.png</file>
+        <file>img/about.png</file>
+        <file>img/tsskblogo_blue.png</file>
+        <file>img/question.png</file>
     </qresource>
 </RCC>

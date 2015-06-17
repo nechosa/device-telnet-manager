@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='koi8-r'?>
+<!DOCTYPE MnemoNet>
+<MNEMONET>
+ <MNEMO_NAME NAME="Пример схемы информационной сети"/>
+ <BACKGROUND B1="255" R1="101" B2="209" R2="225" ANIMATION="100" IS_ANIMATION="0" G1="168" G2="225" IMG=""/>
+ <TIMEOUT OPROS="5" OTVET="5"/>
+ <DIR PROTOKOL="" IS_PROT="1" DATA=""/>
+ <HOSTS>
+  <HOST X="353" Y="214" TYPE="2" HOSTNAME="1" NAME="1"/>
+  <HOST X="876" Y="219" TYPE="2" HOSTNAME="2" NAME="2"/>
+ </HOSTS>
+ <LINKS>
+  <LINK WIDTH="4" BEGIN="0" END="1" TYPE="0" NAME="10142"/>
+ </LINKS>
+</MNEMONET>

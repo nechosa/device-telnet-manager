@@ -11,16 +11,26 @@ QT += network \
 TARGET = qttelnetmanager
 TEMPLATE = app
 SOURCES += main.cpp \
+    spravka.cpp \
     mainform.cpp \
     field.cpp \
     device.cpp \
-    msgbox.cpp
+    msgbox.cpp \
+    property.cpp \
+    link.cpp \
+    text.cpp
 HEADERS += mainform.h \
+    spravka.h \
     field.h \
     device.h \
     msgbox.h \
-    const.h
-FORMS += mainform.ui
+    const.h \
+    property.h \
+    link.h \
+    text.h
+FORMS += mainform.ui \
+    spravka.ui \
+    property.ui
 CONFIG += core
 
 # warn_on

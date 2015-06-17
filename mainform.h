@@ -29,9 +29,9 @@ public:
     void virtual keyReleaseEvent(QKeyEvent *event);
 
     void setDirData(const QString &dir);
-    QString getDirData() const;
+    const QString getDirData() const;
     void setDirProtocol(const QString &dir);
-    QString getDirProtocol() const;
+    const QString getDirProtocol() const;
 
 private:
     Ui::MainForm *ui;
@@ -61,12 +61,19 @@ private:
     void saveToFile(QString fname); // сохранить в файл
 
 private slots:
-
+/*
+    void on_action_route2_triggered();
+    void on_action_route1_triggered();
+    void on_action_route3_triggered();
+*/
+    void on_action_triggered();
+    void on_actionShowInfo_triggered();
     void on_action_route2_hovered();
     void on_action_route1_hovered();//Наведение мышки на кнопку маршрута  1
 
     void addComputer(bool flag);    // Добавить компьютер
     void addRouter(bool flag);      // Добавить маршрутизатор
+    void addRadio(bool flag);      // Добавить Радиомост
     void addLinc(bool flag);        // Добавить Связь
 
     void slotNew();         // слот для создания новой мнемосхемы
@@ -76,12 +83,29 @@ private slots:
     void slotSave_image();  // слот для сохранения картинки
     void slotExit();        // слот для выхода
 
+    void slotAbout();        // слот для отображения информации
+
+    void slotShowInfo(bool show); // слот для отображения/скрытия информации
+
 
     void selectRouter1(bool flag);  // выбор маршрута  1
     void selectRouter2(bool flag);  // выбор маршрута  2
     void selectRouter3(bool flag);  // выбор маршрута  3
 
+    void selectRouter1();  // выбор маршрута  1
+    void selectRouter2();  // выбор маршрута  2
+    void selectRouter3();  // выбор маршрута  3
+
+    void informRouter();
     void setDefault();  // установить все по-умолчанию
+
+    void saveRoute1();
+    void saveRoute2();
+    void saveRoute3();
+
+    signals:
+    void action_Route(int);
+    void saveRoute(int);
 };
 
 #endif // MAINFORM_H

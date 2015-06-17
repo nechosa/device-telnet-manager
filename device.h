@@ -2,46 +2,82 @@
 #define DEVICE_H
 
 #include "field.h"
+#include "property.h"
 #include "const.h"
+#include "link.h"
 #include <QImage>
 #include <GL/gl.h>
 
 class Field;
 
-enum EnumType
+template <typename T>
+        inline T lengthXY(const T& x1,const T& y1,const T& x2,const T& y2)
 {
-    Computer = 1,
-    Router = 2
-};
+    //чЩЮЙУМСЕФ ДМЙОХ МЙОЙЙ РП ЛППТДЙОБФБН
+    return  (sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1)));
+}
 
-class Point
+  // GLfloat y11 = y1+(y2-y1)*R1/theLength;
+
+template <typename T>
+        inline T xy (const T& x,const T& x1,const T& R,const T& length)
 {
-    private:
-    int *x;
-    int *y;
-    public:
-        QVector <int> center;
-};
+    //  чЩЮЙУМСЕФ ЛППТДЙОБФХ ОБ МЙОЙЙ c ТБДЙХУПН R
+    return  (x+(x1-x)*R/length);
+}
+
+template <typename T1,typename T2>
+        inline bool drawCircle (const T1& x,const T1& y,const T2& R,const T2& points)
+{
+
+    //  чЩЮЙУМСЕФ ЛППТДЙОБФХ ОБ МЙОЙЙ c ТБДЙХУПН R
+        GLfloat angle;
+        glBegin(GL_POLYGON);
+        for (int i=0;i<points;i++)
+        {
+            angle = 2*3.14*i/points;
+            glVertex2f(x+R*cos(angle),y+R*sin(angle));
+        }
+        glEnd();
+
+    return 0;
+}
+
+template <typename T>
+        inline void func (const T& x)
+{
+    //  чЩЮЙУМСЕФ ЛППТДЙОБФХ ОБ МЙОЙЙ c ТБДЙХУПН R
+    x+1;
+
+}
+class Link;
 // ЛМБУУ ЬМЕНЕОФБ ОБ ЗТБЖЙЮЕУЛПК НОЕНПУИЕНЕ
-//template <typename T>
+
 class Device//: public Field
 {
 
-   // Q_OBJECT
+    // Q_OBJECT
 
-
+private:
+    const DeviceType d_type;
+    QList <Link *> links;
     bool eventFilter(QObject * obj, QEvent * evnt);
 
-    protected:
+protected:
 
-   Field * parent; // ТБВПЮЕЕ РПМЕ
+    Field * parent; // ТБВПЮЕЕ РПМЕ
 
     int X,Y; //ЛППТДЙОБФЩ ОБ НОЕНПУИЕНЕ
+
+
+    //int dxk1,dyk1; //ЛППТДЙОБФЩ ФПЮЛЙ
     //typedef T *center;
 
     //int numberLinks;
 
     QString Name;
+    QString ipaddr;
+
     int H,W; //ЧЩУПФБ Й ЫЙТЙОБ ОБ НОЕНПУИЕНЕ
 
     QImage pixx,PIXX; // ХУМПЧОЩК ЪОБЛ
@@ -55,10 +91,10 @@ class Device//: public Field
     //int link;
 
     //int X,Y; // ЛППТДЙОБФЩ ОБ НОЕНПУИЕНЕ
-   /* int heigth,width; // ЧЩУПФБ Й ЫЙТЙОБ ОБ НОЕНПУИЕНЕ
+    /* int heigth,width; // ЧЩУПФБ Й ЫЙТЙОБ ОБ НОЕНПУИЕНЕ*/
     int linewidth; // ФПМЭЙОБ МЙОЙЙ
-    */
-/*
+
+    /*
     QString name;
     QString ip_addr;//QURL
     QString comment;
@@ -66,10 +102,18 @@ class Device//: public Field
 
 public:
     Device(Field *work_field,int tmpX, int tmpY/*GLfloat tmpX, GLfloat tmpY*/,QString image, QString myName);
-    Device(Field *work_field,int tmpX, int tmpY,DeviceType type);
+    //Device(Field *work_field,int tmpX, int tmpY,DeviceType type);
+    Device(Field *work_field,int tmpX, int tmpY,DeviceType type ,QString d_name, QString d_ipaddr);
+
 
     virtual ~Device();
+    const DeviceType getDeviceType() const;
+
     bool isSel;//признак выделения компонента
+
+    int lineWigth() const;
+    void setLineWigth(int lw);
+    Property * edit;
     /*
     bool isSelected;
     bool isActive;
@@ -84,14 +128,15 @@ public:
     virtual void move(int x, int y);
 
     int link;
-    virtual int x();
+    virtual int x() const;
     //virtual int getx();
-    virtual int y();
-       virtual QString getName();
+    virtual int y() const;
+    QString getName() const;
+    QString getIpaddr() const;
 
-    virtual int width();
-    virtual int height();
-/*
+    virtual int width() const;
+    virtual int height() const;
+    /*
     //ХУФБОБЧМЙЧБЕФ Й ЧПЪЧТБЭБЕФ ФПМЭЙОХ МЙОЙЙ
     virtual line_width;
     virtual void setLineWidth(int line_width);
@@ -107,75 +152,15 @@ public:
     virtual void mousePressEvent(QMouseEvent *event);
 
     virtual void setPix(QImage &px);
-    virtual QImage pix();
+    virtual QImage pix() const;
     virtual void paint();
+    void appendLink(Link * newLink);
+    Link * getLink(int num) const;
 
 
 };
 
 
-class Link
-{
-protected:
-    GLfloat R1,G1,B1;//цвет градиентной заливки
-    GLfloat R2,G2,B2;
-    GLfloat R1S,G1S,B1S;//цвет градиентной заливки (при выделении)
-    GLfloat R2S,G2S,B2S;
 
-private:
-    //имя и тип
-    QString name;
-    int type;
-    //толщина линии
-    int LineWidth;
-
-public:
-
- bool isSel;//признак выделения компонента
-
-    //начало и окончание связи
-    Device * begining;
-    Device * ending;
-
-    //конструктор и деструктор класса
-    Link(Device * first, Device * last, QString theName, int theType, int theWidth);
-    virtual ~Link();
-
-    //устанавливает и возвращает цвет
-    virtual void setColor(int r1, int g1, int b1,int r2 = 255, int g2 = 255, int b2 = 255);
-    virtual void getColor(int &r1, int &g1,int &b1, int &r2,int &g2,int &b2)  ;
-    virtual void setColorSelected(int r1, int g1, int b1,int r2 = 255, int g2 = 255, int b2 = 255);
-    virtual void getColorSelected(int &r1, int &g1,int &b1, int &r2,int &g2,int &b2)  ;
-
-
-    //устанавливает и возвращает признак выделени
-
-    virtual void setIsSelected(bool fl);
-    virtual bool isSelected()  ;
-
-    bool active;
-
-    //рисование линии связи
-    void paintPoint(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2,GLfloat KS,int R);
-    virtual void paint(int aniStep);
-
-    //возвращает область в центре, которую можно использовать для выделения связи
-    virtual QRect getCentralArea();
-
-    //установка признака активности
-    void SetActive(bool activ);
-
-    //устанавливает имя и тип
-    void setName(QString n);
-    void setType(int t);
-
-    //возвращает имя и тип
-    QString getName();
-    int getType();
-
-    //установка и возврат толщины линии
-    void setWidth(int w);
-    int getWidth();
-};
 
 #endif // DEVICE_H

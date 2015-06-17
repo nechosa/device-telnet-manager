@@ -8,6 +8,7 @@
   *****************************************************************/
 #include "mainform.h"
 #include "ui_mainform.h"
+#include "spravka.h"
 
 #include <QtGui>
 #include <QtCore>
@@ -16,8 +17,11 @@
 #include <QKeyEvent>
 #include "device.cpp"
 #include "constant.h"
+#include "const.h"
 #include "msgbox.h"
+
 //#include <QTest>
+#include <QCursor>
 
 
 MainForm::MainForm(QWidget *parent)
@@ -30,7 +34,7 @@ MainForm::MainForm(QWidget *parent)
         shift(false),key1(0)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle(QString::fromLocal8Bit(NAME_PROGRAM));
     //форма по центру экрана
     QRect frect = frameGeometry();
     frect.moveCenter(QDesktopWidget().availableGeometry().center());
@@ -42,20 +46,77 @@ MainForm::MainForm(QWidget *parent)
     QObject::connect(ui->action_open,SIGNAL(triggered()),this,SLOT(slotOpen()));
     QObject::connect(ui->action_save,SIGNAL(triggered()),this,SLOT(slotSave()));
     QObject::connect(ui->action_save_as,SIGNAL(triggered()),this,SLOT(slotSave_as()));
+    //
+    QObject::connect(ui->actionShowInfo,SIGNAL(triggered(bool)),this,SLOT(slotShowInfo(bool)));
 
     //слоты объектов toolbar 0
     QObject::connect(ui->action_add_comp,SIGNAL(triggered(bool)),this,SLOT(addComputer(bool)));
     QObject::connect(ui->action_add_router,SIGNAL(triggered(bool)),this,SLOT(addRouter(bool)));
+    QObject::connect(ui->action_add_radio,SIGNAL(triggered(bool)),this,SLOT(addRadio(bool)));
     QObject::connect(ui->action_add_linc,SIGNAL(triggered(bool)),this,SLOT(addLinc(bool)));
+
+    QObject::connect(ui->actionRouteInform,SIGNAL(triggered()),this,SLOT(informRouter()));
+
+    QObject::connect(ui->action_about,SIGNAL(triggered()),this,SLOT(slotAbout()));
+
 
     //слоты объектов toolbar 1
     //слоты объектов toolbar 2
     //...
 
+              QMenu * menu = new QMenu(this);
+              /*
+              QAction *action[3];
+              for (int i = 1;i<=3;++i)
+              {
+                  qDebug()<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>QAction+++";
+                  action[i]= new QAction(QString::fromLocal8Bit("Сохранить как маршрут ")+QString::number(i), this);
+                  action[i]->setIcon(QIcon(":/img/img/inverse_kinematics_256_"+QString::number(i)+".png"));
+                  menu->addAction(action[i]);
+                  emit action_Route(i);
+                  QObject::connect(action[i],SIGNAL(triggered()),this,SLOT(informRouter(i)));
+
+              }
+
+               QObject::connect(this,SIGNAL(action_Route(int)),this,SLOT(informRouter(int)));
+               */
+
+              QAction *action1 = new QAction(QString::fromLocal8Bit("Сохранить как маршрут 1"), this);
+               action1->setIcon(QIcon(":/img/img/inverse_kinematics_256_1.png"));
+                    menu->addAction(action1);
+                    //QObject::connect(action1,SIGNAL(triggered()),this,SLOT(createTerminal()));
+                    //menu->addSeparator();
+                    QAction *action2 = new QAction(QString::fromLocal8Bit("Сохранить как маршрут 2"), this);
+                    action2->setIcon(QIcon(":/img/img/inverse_kinematics_256_2.png"));
+                    menu->addAction(action2);
+                     QAction *action3 = new QAction(QString::fromLocal8Bit("Сохранить как маршрут 3"), this);
+                    action3->setIcon(QIcon(":/img/img/inverse_kinematics_256_3.png"));
+                    menu->addAction(action3);
+                    //:/img/img/inverse_kinematics_256_1.png
+                   // menu->exec();
+
+
+    QObject::connect(action1,SIGNAL(triggered()),this,SLOT(saveRoute1()));
+    QObject::connect(action2,SIGNAL(triggered()),this,SLOT(saveRoute2()));
+    QObject::connect(action3,SIGNAL(triggered()),this,SLOT(saveRoute3()));
+      ui->actionRouteInform->setMenu(menu);
+
+       // QObject::connect(action3,SIGNAL(triggered()),this,SLOT(saveRoute3()));
+     // work_field->addRoute();
+    //ui->actionRouteInform->set;
+
+    // QObject::connect(ui->actionRouteInform,SIGNAL(triggered()),menu,SLOT()));
+
     //слоты объектов toolbar 3
     QObject::connect(ui->action_route1,SIGNAL(triggered(bool)),this,SLOT(selectRouter1(bool)));
     QObject::connect(ui->action_route2,SIGNAL(triggered(bool)),this,SLOT(selectRouter2(bool)));
     QObject::connect(ui->action_route3,SIGNAL(triggered(bool)),this,SLOT(selectRouter3(bool)));
+
+    /*
+    QObject::connect(ui->action_route1,SIGNAL(hovered()),this,SLOT(selectRouter1()));
+    QObject::connect(ui->action_route2,SIGNAL(hovered()),this,SLOT(selectRouter2()));
+    QObject::connect(ui->action_route3,SIGNAL(hovered()),this,SLOT(selectRouter3()));
+    */
 
     //создание рабочего поля мнемосхемы
     work_field = new Field(ui->gbShema);
@@ -66,12 +127,14 @@ MainForm::MainForm(QWidget *parent)
 
     //Конфиг
     //загружаеи последнюю мнемосхему
-    //loadFromFile("temp.xml");
+   loadFromFile("temp.xml");
 }
 
 MainForm::~MainForm()
 {
-    //saveToFile("temp.xml");
+    qDebug()<<"save File";
+    saveToFile("temp.xml");
+    qDebug()<<"save File end";
     delete ui;
 }
 
@@ -80,7 +143,7 @@ void MainForm::setDirData(const QString &dir)
     dirData = dir;
 }
 
-QString MainForm::getDirData() const
+const QString MainForm::getDirData() const
 {
     return dirData;
 }
@@ -90,7 +153,7 @@ void MainForm::setDirProtocol(const QString &dir)
     dirProtocol = dir;
 }
 
-QString MainForm::getDirProtocol() const
+const QString MainForm::getDirProtocol() const
 {
     return dirProtocol;
 }
@@ -102,10 +165,20 @@ void MainForm::setDefault()
     ui->action_add_router->setChecked(false);
     ui->action_add_linc->setChecked(false);
     ui->action_add_comp->setChecked(false);
+    ui->action_add_radio->setChecked(false);
 }
 
 void MainForm::slotNew()
 {
+    qDebug()<<" Create new schema";
+    /* Создание новой мнемосхемы */
+
+}
+
+void MainForm::slotAbout()
+{
+    spravka *dlg = new spravka(this);
+    dlg->exec();
     qDebug()<<" Create new schema";
     /* Создание новой мнемосхемы */
 
@@ -180,13 +253,21 @@ void MainForm::slotExit()
     /* Выход */
 }
 
+void MainForm::slotShowInfo(bool show)
+{
+    /* Отобразить информацию */
+    qDebug()<<" show1"<<show;
+     work_field->setInfo(show);
+}
 
 void MainForm::loadFromFile(QString fname)
 {
     /* Загрузить из файла */
+
     QFile * f = new QFile (fname);
     if(f->open(QIODevice::ReadOnly))
     {
+        qDebug()<<"Open File";
         QByteArray content = f->readAll();
         QString theContent = QString::fromLocal8Bit(content.data());
         f->close();
@@ -229,8 +310,11 @@ void MainForm::loadFromFile(QString fname)
                 //ТНМ
                 if (tag.tagName().toUpper()==QString("BACKGROUND"))
                 {
-                    work_field->setColor(tag.attribute(QString("R1")).toInt(),tag.attribute(QString("G1")).toInt(),tag.attribute(QString("B1")).toInt(),
-                                         tag.attribute(QString("R2")).toInt(),tag.attribute(QString("G2")).toInt(),tag.attribute(QString("B2")).toInt());
+                    work_field->setColor(tag.attribute(QString("R1")).toInt(),tag.attribute(QString("G1")).toInt(),
+                                         tag.attribute(QString("B1")).toInt(),
+                                         tag.attribute(QString("R2")).toInt(),
+                                         tag.attribute(QString("G2")).toInt(),
+                                         tag.attribute(QString("B2")).toInt());
                     imageName=tag.attribute(QString("IMG"));
                     if( !(imageName.isEmpty() || imageName.isNull()) )
                     {
@@ -260,11 +344,11 @@ void MainForm::loadFromFile(QString fname)
                 //йЮРЮКНЦХ ОН СЛНКВЮМХЧ
                 if (tag.tagName().toUpper()==QString("DIR"))
                 {
-                    setDirData(tag.attribute(QString("DATA")));
-                    setDirProtocol(tag.attribute(QString("PROTOKOL")));
+                    //setDirData(tag.attribute(QString("DATA")));
+                    //setDirProtocol(tag.attribute(QString("PROTOKOL")));
                     //dirData=tag.attribute(QString("DATA"));
                     //dirProtokol=tag.attribute(QString("PROTOKOL"));
-                    isProtokol=tag.attribute(QString("IS_PROT")).toInt();
+                    //isProtokol=tag.attribute(QString("IS_PROT")).toInt();
                 }
                 //сГКШ ЯБЪГХ
                 if (tag.tagName().toUpper() == QString("HOSTS"))
@@ -275,25 +359,45 @@ void MainForm::loadFromFile(QString fname)
                         QDomElement tagC = nodeC.toElement();
                         if (tagC.tagName().toUpper() == QString("HOST"))
                         {
-                            /*
+
                             //ЯНГДЮЕЛ СГЕК
+                            /*
                             Device * node=new Device(field,tagC.attribute(QString("NAME")),
                                                        tagC.attribute(QString("TYPE")).toInt(),tagC.attribute(QString("HOSTNAME")),
                                                        tagC.attribute(QString("X")).toInt(),tagC.attribute(QString("Y")).toInt());
+                            */
+                            //DeviceType type = ROUTER;
+                            //int m = tagC.attribute(QString("TYPE")).toInt();
+                            //DeviceType type1 = tagC.attribute(QString("TYPE")).toInt();
+                            //qDebug()<<"TYPE = "<<tagC.attribute(QString("TYPE"));
+                            //qDebug()<<"ROUTER = "<<ROUTER;
+                            //qDebug()<<"TYPE1 = "<<type1;
+                            /*
+                            Device * node=new Device(work_field,tagC.attribute(QString("X")).toInt(),
+                            tagC.attribute(QString("Y")).toInt(), (DeviceType)tagC.attribute(QString("TYPE")).toInt());
+                            */
 
+                            Device * node=new Device(work_field,tagC.attribute(QString("X")).toInt(),
+                            tagC.attribute(QString("Y")).toInt(), (DeviceType)tagC.attribute(QString("TYPE")).toInt(),
+                            tagC.attribute(QString("NAME")),tagC.attribute(QString("IP")));
+                            qDebug()<<"TYPE"<<tagC.attribute(QString("TYPE"));
                             //Device(Field *work_field,int tmpX, int tmpY,QString image, QString myName);
                             //ДНАЮБКЪЕЛ СГЕК МЮ ПЮАНВЕЕ ОНКЕ
                             work_field->appendItem(node);
+                            /*
                             StNode *nod = new Struct_Node(tagC.attribute(QString("NAME")),tagC.attribute(QString("HOSTNAME")),
                                                           QString::fromLocal8Bit(uzNotActiv), tagC.attribute(QString("TYPE")).toInt());
-                            lstTblNode<<nod;
+                            */
+                            //lstTblNode<<nod;
 
                             //ЕЯКХ РЮАКХЖЮ СГКНБ НРЙПШРЮ, РН ГЮОНКМЪЕЛ ЕЕ
+                            /*
                             if(uz)
                             {
                                 uzel->CreateTblNode(lstTblNode);
                             }
                             */
+
                         }
                         nodeC = nodeC.nextSibling();
                     }
@@ -301,6 +405,7 @@ void MainForm::loadFromFile(QString fname)
                 }
 
                 //ЙЮМЮКШ ЯБЪГХ
+
                 if (tag.tagName().toUpper() == QString("LINKS"))
                 {
                     QDomNode nodeC = tag.firstChild();
@@ -309,26 +414,49 @@ void MainForm::loadFromFile(QString fname)
                         QDomElement tagC = nodeC.toElement();
                         if (tagC.tagName().toUpper() == QString("LINK"))
                         {
-                            /*
-                            //МЮВЮКН Х ЙНМЕЖ ЯБЪГХ
+                             /*QDomNode nodeLink = tag.firstChild();
+                              while (!nodeLink.isNull())
+                              {
+                                QDomElement tagLinkItem = nodeLink.toElement();
+                                if (tagC.tagName().toUpper() == QString("PARAM"))
+                                {
+
+                                }
+                                if (tagC.tagName().toUpper() == QString("ETH0"))
+                                {
+
+                                }
+                                if (tagC.tagName().toUpper() == QString("ETH1"))
+                                {
+
+                                }
+                              }
+                             */
+
                             Device * blockBegin = work_field->getItem(tagC.attribute(QString("BEGIN")).toInt());
                             Device * blockEnd = work_field->getItem(tagC.attribute(QString("END")).toInt());
 
-                            //ЯНГДЮЕЛ ЙЮМЮК ЯБЪГХ
-                            Link * ch = new Link(blockBegin, blockEnd,tagC.attribute(QString("NAME")),
-                                                        tagC.attribute(QString("TYPE")).toInt(),tagC.attribute(QString("WIDTH")).toInt());
-                            //ДНАЮБКЪЕЛ ЕЦН МЮ ПЮАНВЕЕ ОНКЕ
-                            field->appendLink(ch);
-                            //ЯНГДЮЕЛ ЯРПСЙРСПС ДКЪ НРНАПЮФЕМХЪ ЙЮМЮКЮ Б РЮАКХЖЕ
-                            StChan *cha = new Struct_Channel(tagC.attribute(QString("NAME")),blockBegin->getName(),blockEnd->getName(),
-                                                             QString::fromLocal8Bit(uzNotActiv),tagC.attribute(QString("TYPE")).toInt());
-                            lstTblChan<<cha;
-                            //ЕЯКХ РЮАКХЖЮ ЙЮМЮКНБ НРЙПШРЮ, РН ГЮОНКМЪЕЛ ЕЕ
-                            if(chan)
-                            {
-                                chanel->CreateTblChannel(lstTblChan);
-                            }
-                            */
+                            Link * ch = new Link(work_field,blockBegin, blockEnd,tagC.attribute(QString("NAME")),
+                                                        tagC.attribute(QString("TYPE")).toInt(),tagC.attribute(QString("WIDTH")).toInt(),
+                                                        tagC.attribute(QString("ETH0")),tagC.attribute(QString("ETH1")),
+                                                        tagC.attribute(QString("ETH0X")).toInt(),tagC.attribute(QString("ETH0Y")).toInt(),
+                                                        tagC.attribute(QString("ETH1X")).toInt(),tagC.attribute(QString("ETH1Y")).toInt()
+                                                        );
+       /*
+     Link::Link(Field *work_field,Device * first, Device * last, QString theName,int theType,int theWidth,QString l_eth0,QString l_eth1,
+         int x_eth0,int y_eth0,
+         int x_eth1,int y_eth1
+           ) :parent(work_field),
+     */
+              /*
+                                        tagC.setAttribute(QString("ETH0"),theChannel->txt1->getText());
+            tagC.setAttribute(QString("ETH0X"),theChannel->txt1->x());
+            tagC.setAttribute(QString("ETH0Y"),theChannel->txt1->y());
+            tagC.setAttribute(QString("ETH1"),theChannel->txt2->getText());
+            tagC.setAttribute(QString("ETH1X"),theChannel->txt2->x());
+            tagC.setAttribute(QString("ETH1Y"),theChannel->txt2->y());
+            */
+                            work_field->appendLink(ch);
                         }
                         nodeC = nodeC.nextSibling();
                     }
@@ -400,19 +528,20 @@ void MainForm::saveToFile(QString fname)
         tagRoot.appendChild(tag);
 
         //оЕПХНДШ
-        tag = doc.createElement(QString("TIMEOUT"));
-        tag.setAttribute(QString("OPROS"),oprosPeriod);
-        tag.setAttribute(QString("OTVET"),otvetPeriod);
+        //tag = doc.createElement(QString("TIMEOUT"));
+        //tag.setAttribute(QString("OPROS"),oprosPeriod);
+        //tag.setAttribute(QString("OTVET"),otvetPeriod);
         tagRoot.appendChild(tag);
 
         //йЮРЮКНЦХ ОН СЛНКВЮМХЧ
-        tag = doc.createElement(QString("DIR"));
-        tag.setAttribute(QString("DATA"),dirData);
-        tag.setAttribute(QString("PROTOKOL"),dirProtocol);
-        tag.setAttribute(QString("IS_PROT"),isProtokol);
+        //tag = doc.createElement(QString("DIR"));
+        //tag.setAttribute(QString("DATA"),dirData);
+        //tag.setAttribute(QString("PROTOKOL"),dirProtocol);
+        //tag.setAttribute(QString("IS_PROT"),isProtokol);
         tagRoot.appendChild(tag);
 
         //сГКШ ЯБЪГХ
+
         QList <Device *> nodes = work_field->getLstNode();
         tag = doc.createElement(QString("HOSTS"));
         for (int i=0;i<nodes.size();i++)
@@ -422,15 +551,18 @@ void MainForm::saveToFile(QString fname)
             tagC.setAttribute(QString("X"),theBlock->x());
             tagC.setAttribute(QString("Y"),theBlock->y());
             tagC.setAttribute(QString("NAME"),theBlock->getName());
+            tagC.setAttribute(QString("TYPE"),theBlock->getDeviceType());
             //tagC.setAttribute(QString("TYPE"),theBlock->getType());
-            //tagC.setAttribute(QString("HOSTNAME"),theBlock->getAddress());
+            tagC.setAttribute(QString("IP"),theBlock->getIpaddr());
             tag.appendChild(tagC);
         }
         tagRoot.appendChild(tag);
-/*
+
         //йЮМЮКШ ЯБЪГХ
+        qDebug()<<"Link";
         QList <Link *> channels = work_field->getLstChannel();
         tag = doc.createElement(QString("LINKS"));
+        qDebug()<<"Link size" << channels.size();
         for (int i=0;i<channels.size();i++)
         {
             Link * theChannel = channels[i];
@@ -448,10 +580,16 @@ void MainForm::saveToFile(QString fname)
             tagC.setAttribute(QString("BEGIN"),beg);
             tagC.setAttribute(QString("END"),end);
             tagC.setAttribute(QString("WIDTH"),theChannel->getWidth());
+            tagC.setAttribute(QString("ETH0"),theChannel->txt1->getText());
+            tagC.setAttribute(QString("ETH0X"),theChannel->txt1->x());
+            tagC.setAttribute(QString("ETH0Y"),theChannel->txt1->y());
+            tagC.setAttribute(QString("ETH1"),theChannel->txt2->getText());
+            tagC.setAttribute(QString("ETH1X"),theChannel->txt2->x());
+            tagC.setAttribute(QString("ETH1Y"),theChannel->txt2->y());
             tag.appendChild(tagC);
         }
         tagRoot.appendChild(tag);
-*/
+
         doc.appendChild(tagRoot);
         QString theContent = doc.toString();
         f->write(theContent.toLocal8Bit().data(),theContent.length());
@@ -493,8 +631,31 @@ void MainForm::addRouter(bool flag)
         setCursor(Qt::ArrowCursor);
         ui->action_add_comp->setChecked(false);
         ui->action_add_linc->setChecked(false);
+        ui->action_add_radio->setChecked(false);
         //work_field->setcheckDevice(ROUTER);
         work_field->setcheckDevice(ROUTER);
+        // work_field->setcheckDevice(Router);
+    }
+    else
+    {
+        this->setDefault();
+
+    }
+}
+
+
+void MainForm::addRadio(bool flag)
+{
+    /* Слот добавление Маршрутизатора   */
+    if (flag)
+    {
+        //qDebug()<<"addRouter()";
+        setCursor(Qt::ArrowCursor);
+        ui->action_add_comp->setChecked(false);
+        ui->action_add_linc->setChecked(false);
+        ui->action_add_router->setChecked(false);
+        //work_field->setcheckDevice(ROUTER);
+        work_field->setcheckDevice(RADIO);
         // work_field->setcheckDevice(Router);
     }
     else
@@ -513,6 +674,7 @@ void MainForm::addLinc(bool flag)
         work_field->setcheckDevice(LINK);
         ui->action_add_router->setChecked(false);
         ui->action_add_comp->setChecked(false);
+        ui->action_add_radio->setChecked(false);
     }
     else
     {
@@ -535,7 +697,7 @@ void MainForm::selectRouter1(bool flag)
     ui->action_route2->setEnabled(true);
     ui->action_route3->setEnabled(true);
 
-
+work_field->showRoute(1,flag);
     //ui->action_
     //ui->action_route
 
@@ -552,11 +714,14 @@ void MainForm::selectRouter2(bool flag)
     ui->action_route1->setEnabled(true);
     ui->action_route3->setEnabled(true);
 
+    work_field->showRoute(2,flag);
+
 
 
 }
 void MainForm::selectRouter3(bool flag)
 {
+     qDebug()<<"saveRoute3";
     /* Слот выбора 3 маршрута  */
     ui->action_route1->setChecked(false);
     ui->action_route1->setEnabled(false);
@@ -566,9 +731,120 @@ void MainForm::selectRouter3(bool flag)
     //sleep(1);
     ui->action_route1->setEnabled(true);
     ui->action_route2->setEnabled(true);
+    work_field->showRoute(3,flag);
 
 
 
+}
+/********************************************************************/
+
+
+void MainForm::selectRouter1()
+{
+    /* Слот выбора 1 маршрута  */
+    ui->action_route2->setChecked(false);
+    ui->action_route2->setEnabled(false);
+    ui->action_route3->setChecked(false);
+    ui->action_route3->setEnabled(false);
+
+    //sleep(1);
+    ui->action_route2->setEnabled(true);
+    ui->action_route3->setEnabled(true);
+
+work_field->showRoute(1,true);
+    //ui->action_
+    //ui->action_route
+
+}
+void MainForm::selectRouter2()
+{
+    /* Слот выбора 2 маршрута  */
+    ui->action_route1->setChecked(false);
+    ui->action_route1->setEnabled(false);
+    ui->action_route3->setChecked(false);
+    ui->action_route3->setEnabled(false);
+
+    //sleep(1);
+    ui->action_route1->setEnabled(true);
+    ui->action_route3->setEnabled(true);
+
+    work_field->showRoute(2,true);
+
+
+
+}
+void MainForm::selectRouter3()
+{
+     qDebug()<<"saveRoute3";
+    /* Слот выбора 3 маршрута  */
+    ui->action_route1->setChecked(false);
+    ui->action_route1->setEnabled(false);
+    ui->action_route2->setChecked(false);
+    ui->action_route2->setEnabled(false);
+
+    //sleep(1);
+    ui->action_route1->setEnabled(true);
+    ui->action_route2->setEnabled(true);
+    work_field->showRoute(3,true);
+
+
+
+}
+
+
+
+void MainForm::saveRoute1()
+{
+    qDebug()<<"saveRoute1";
+    //emit saveRoute(1);
+     work_field->addRoute(1);
+}
+
+void MainForm::saveRoute2()
+{
+    qDebug()<<"saveRoute2";
+    //emit saveRoute(2);
+     work_field->addRoute(2);
+}
+
+void MainForm::saveRoute3()
+{
+    qDebug()<<"saveRoute3";
+     work_field->addRoute(3);
+    //emit saveRoute(3);
+}
+void MainForm::informRouter()
+{
+    qDebug()<<"informRouter";
+    QPoint globalPos;
+
+    QWidget * entrywidget = ui->toolBar_2->widgetForAction(ui->actionRouteInform);
+    qDebug()<<"geometry()"<<entrywidget->geometry();
+     qDebug()<<"geometry()"<<this->geometry().x();
+     qDebug()<<"x()"<<entrywidget->x();
+     qDebug()<<"y()"<<entrywidget->y();
+     qDebug()<<"height()"<<entrywidget->height();
+     qDebug()<<"width()"<<entrywidget->width();
+     //entrywidget->mapToGlobal(&globalPos);
+      qDebug()<<"globalPos = "<<entrywidget->pos();
+     //entrywidget->ge
+    //entrywidget->setEnabled(false);
+    
+   ui->actionRouteInform->menu()->exec(QPoint(this->geometry().x()+entrywidget->geometry().x()+ui->toolBar_2->x(),
+                                              this->geometry().y()+entrywidget->geometry().y()+ui->toolBar_2->y()+entrywidget->height()));
+    //ui->actionRouteInform->menu()->exec(QPoint(this->x()/*+ui->toolBar_2->width()*/,
+   //this->y()+ ui->toolBar_2->height())/*ui->toolBar_2->x()/*ui->actionRouteInform->p*/);
+
+   //work_field->addRoute();
+   //work_field->addRoute();
+
+        /*
+    QMenu * menu = new QMenu("My menu");
+    ui->toolBar_2->addAction(menu->menuAction());
+    menu->menuAction()->setIcon(QIcon(":/img/img/workstation_256.png"));
+
+    */
+   // menu->exec();
 }
 bool MainForm::eventFilter(QObject * obj, QEvent * evnt)
 {
@@ -674,9 +950,9 @@ void MainForm::keyReleaseEvent(QKeyEvent *event)
 void MainForm::on_action_route1_hovered()
 {
     /* Выделение нужного маршрута при наведении мышки */
-    qDebug()<<"MainForm::on_action_route1_hovered()";
+    //qDebug()<<"MainForm::on_action_route1_hovered()";
 //    work_field->set
-    work_field->setActive(true);
+    //work_field->setActive(true);
 }
 
 
@@ -694,5 +970,32 @@ void MainForm::closeEvent(QCloseEvent * event)
 
 void MainForm::on_action_route2_hovered()
 {
-    work_field->setActive(false);
+    //work_field->setActive(false);
+    //work_field->links;
+}
+/*
+void MainForm::on_action_route3_triggered()
+{
+   // work_field->showRoute(3,true);
+}
+
+void MainForm::on_action_route1_triggered()
+{
+    //work_field->showRoute(1,true);
+}
+
+void MainForm::on_action_route2_triggered()
+{
+    // work_field->showRoute(2,true);
+}
+*/
+
+void MainForm::on_actionShowInfo_triggered()
+{
+
+}
+
+void MainForm::on_action_triggered()
+{
+
 }
